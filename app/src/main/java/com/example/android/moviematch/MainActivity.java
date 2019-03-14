@@ -23,7 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.moviematch.data.MovieRepo;
-import com.example.android.moviematch.utils.MovieUtils;
+import com.example.android.moviematch.utils.MovieDiscoverUtils;
 
 import java.util.ArrayList;
 
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity
         boolean searchInDescription = preferences.getBoolean(getString(R.string.pref_in_description_key), true);
         boolean searchInReadme = preferences.getBoolean(getString(R.string.pref_in_readme_key), false);
 
-        String url = MovieUtils.buildMovieSearchURL(query, sort, language, user, searchInName,
+        String url = MovieDiscoverUtils.buildMovieSearchURL(query, sort, language, user, searchInName,
                 searchInDescription, searchInReadme);
         Log.d(TAG, "querying search URL: " + url);
 
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSearchItemClick(MovieRepo repo) {
         Intent intent = new Intent(this, MovieDetailActivity.class);
-        intent.putExtra(MovieUtils.EXTRA_MOVIE_REPO, repo);
+        intent.putExtra(MovieDiscoverUtils.EXTRA_MOVIE_REPO, repo);
         startActivity(intent);
     }
 
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity
         if (s != null) {
             mLoadingErrorTV.setVisibility(View.INVISIBLE);
             //mSearchResultsRV.setVisibility(View.VISIBLE);
-            mRepos = MovieUtils.parseMovieSearchResults(s);
+            mRepos = MovieDiscoverUtils.parseMovieSearchResults(s);
             mMovieSearchAdapter.updateSearchResults(mRepos);
         } else {
             mLoadingErrorTV.setVisibility(View.VISIBLE);

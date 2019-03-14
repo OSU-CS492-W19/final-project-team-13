@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.moviematch.data.MovieRepo;
-import com.example.android.moviematch.utils.MovieUtils;
+import com.example.android.moviematch.utils.MovieDiscoverUtils;
 
 public class MovieDetailActivity extends AppCompatActivity {
     private TextView mRepoNameTV;
@@ -41,8 +41,8 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         mRepo = null;
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(MovieUtils.EXTRA_MOVIE_REPO)) {
-            mRepo = (MovieRepo) intent.getSerializableExtra(MovieUtils.EXTRA_MOVIE_REPO);
+        if (intent != null && intent.hasExtra(MovieDiscoverUtils.EXTRA_MOVIE_REPO)) {
+            mRepo = (MovieRepo) intent.getSerializableExtra(MovieDiscoverUtils.EXTRA_MOVIE_REPO);
             mRepoNameTV.setText(mRepo.full_name);
             mRepoStarsTV.setText("" + mRepo.stargazers_count);
             mRepoDescriptionTV.setText(mRepo.description);

@@ -9,19 +9,15 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-public class MovieUtils {
-    private final static String MOVIE_SEARCH_BASE_URL = "https://api.github.com/search/repositories";
-    private final static String MOVIE_SEARCH_QUERY_PARAM = "q";
-    private final static String MOVIE_SEARCH_SORT_PARAM = "sort";
-    private final static String MOVIE_SEARCH_SORT_VALUE = "stars";
-    private final static String MOVIE_SEARCH_LANGUAGE_FORMAT_STR = "language:%s";
-    private final static String MOVIE_SEARCH_USER_FORMAT_STR = "user:%s";
-    private final static String MOVIE_SEARCH_SEARCH_IN_FORMAT_STR = "in:%s";
-    private final static String MOVIE_SEARCH_IN_NAME = "name";
-    private final static String MOVIE_SEARCH_IN_DESCRIPTION = "description";
-    private final static String MOVIE_SEARCH_IN_README = "readme";
+public class PosterUtils {
+    private final static String MOVIE_DISCOVER_BASE_URL = "https://api.themoviedb.org/3/";
+    private final static String MOVIE_DISCOVER_API_PARAM = "api_key"
+    private final static String MOVIE_DISCOVER_SORT_PARAM = "sort_by";
+    private final static String MOVIE_DISCOVER_FILTER_RELEASE_YEAR_PARAM = "primary_release_year";
 
-    public static final String EXTRA_MOVIE_REPO = "MovieUtils.MovieRepo";
+
+    private final static String MOVIE_API_KEY = "a3b25b48aba236d99a5b03f61bab59ea";
+    public static final String EXTRA_MOVIE_REPO = "MovieDiscoverUtils.MovieRepo";
 
     public static class MovieSearchResults {
         public ArrayList<MovieRepo> items;
