@@ -10,6 +10,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
@@ -22,6 +23,13 @@
         </activity>
         <activity
             android:name="com.example.android.moviematch.SettingsActivity"
+            android:parentActivityName="com.example.android.moviematch.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.android.moviematch.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.example.android.moviematch.MovieSearchActivity"
             android:parentActivityName="com.example.android.moviematch.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

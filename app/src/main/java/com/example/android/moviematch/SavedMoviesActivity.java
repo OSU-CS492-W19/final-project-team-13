@@ -10,7 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.example.android.moviematch.data.MovieRepo;
-import com.example.android.moviematch.utils.MovieDiscoverUtils;
+import com.example.android.moviematch.utils.MovieUtils;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class SavedMoviesActivity extends AppCompatActivity implements MovieSearc
     @Override
     public void onSearchItemClick(MovieRepo repo) {
         Intent intent = new Intent(this, MovieDetailActivity.class);
-        intent.putExtra(MovieDiscoverUtils.EXTRA_MOVIE_REPO, repo);
+        intent.putExtra(MovieUtils.EXTRA_MOVIE_REPO, repo);
         startActivity(intent);
     }
 }
