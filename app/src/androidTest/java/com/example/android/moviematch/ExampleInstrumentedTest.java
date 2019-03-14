@@ -1,4 +1,4 @@
-package com.example.android.movieapp;
+package com.example.android.moviematch;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

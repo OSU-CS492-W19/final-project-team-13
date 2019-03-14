@@ -1,10 +1,10 @@
-package com.example.android.movieapp.utils;
+package com.example.android.moviematch.utils;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.example.android.movieapp.data.MovieRepo;
+import com.example.android.moviematch.data.MovieRepo;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;

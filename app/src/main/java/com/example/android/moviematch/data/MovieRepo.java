@@ -1,4 +1,4 @@
-package com.example.android.movieapp.data;
+package com.example.android.moviematch.data;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;

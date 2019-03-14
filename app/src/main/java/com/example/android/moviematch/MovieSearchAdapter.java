@@ -1,4 +1,4 @@
-package com.example.android.movieapp;
+package com.example.android.moviematch;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.android.movieapp.data.MovieRepo;
+import com.example.android.moviematch.data.MovieRepo;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
-package com.example.android.movieapp;
+package com.example.android.moviematch;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
-import com.example.android.movieapp.data.MovieRepo;
-import com.example.android.movieapp.data.MovieRepoRepository;
+import com.example.android.moviematch.data.MovieRepo;
+import com.example.android.moviematch.data.MovieRepoRepository;
 
 import java.util.List;
 

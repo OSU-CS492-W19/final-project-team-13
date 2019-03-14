@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.android.movieapp">
+    package="com.example.android.moviematch">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -14,28 +14,28 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name="com.example.android.movieapp.SavedMoviesActivity"
-            android:parentActivityName="com.example.android.movieapp.MainActivity">
+            android:name="com.example.android.moviematch.SavedMoviesActivity"
+            android:parentActivityName="com.example.android.moviematch.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.android.movieapp.MainActivity" />
+                android:value="com.example.android.moviematch.MainActivity" />
         </activity>
         <activity
-            android:name="com.example.android.movieapp.SettingsActivity"
-            android:parentActivityName="com.example.android.movieapp.MainActivity">
+            android:name="com.example.android.moviematch.SettingsActivity"
+            android:parentActivityName="com.example.android.moviematch.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.android.movieapp.MainActivity" />
+                android:value="com.example.android.moviematch.MainActivity" />
         </activity>
         <activity
-            android:name="com.example.android.movieapp.MovieDetailActivity"
-            android:parentActivityName="com.example.android.movieapp.MainActivity">
+            android:name="com.example.android.moviematch.MovieDetailActivity"
+            android:parentActivityName="com.example.android.moviematch.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.android.movieapp.MainActivity" />
+                android:value="com.example.android.moviematch.MainActivity" />
         </activity>
         <activity
-            android:name="com.example.android.movieapp.MainActivity"
+            android:name="com.example.android.moviematch.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

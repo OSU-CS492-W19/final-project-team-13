@@ -1,4 +1,4 @@
-package com.example.android.movieapp;
+package com.example.android.moviematch;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

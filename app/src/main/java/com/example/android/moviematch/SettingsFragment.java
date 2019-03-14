@@ -1,4 +1,4 @@
-package com.example.android.movieapp;
+package com.example.android.moviematch;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

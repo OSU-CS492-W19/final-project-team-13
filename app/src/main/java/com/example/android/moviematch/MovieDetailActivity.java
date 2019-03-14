@@ -1,4 +1,4 @@
-package com.example.android.movieapp;
+package com.example.android.moviematch;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -14,8 +14,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.movieapp.data.MovieRepo;
-import com.example.android.movieapp.utils.MovieUtils;
+import com.example.android.moviematch.data.MovieRepo;
+import com.example.android.moviematch.utils.MovieUtils;
 
 public class MovieDetailActivity extends AppCompatActivity {
     private TextView mRepoNameTV;

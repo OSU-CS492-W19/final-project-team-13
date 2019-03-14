@@ -1,4 +1,4 @@
-package com.example.android.movieapp;
+package com.example.android.moviematch;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.example.android.movieapp.data.MovieRepo;
-import com.example.android.movieapp.utils.MovieUtils;
+import com.example.android.moviematch.data.MovieRepo;
+import com.example.android.moviematch.utils.MovieUtils;
 
 import java.util.List;
 

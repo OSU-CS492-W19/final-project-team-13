@@ -1,4 +1,4 @@
-package com.example.android.movieapp.data;
+package com.example.android.moviematch.data;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;

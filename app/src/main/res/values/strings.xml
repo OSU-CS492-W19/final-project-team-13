@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Movie App</string>
+    <string name="app_name">Movie Match</string>
     <string name="search_box_hint">Search GitHub...</string>
     <string name="search_button_text">Do Search</string>
     <string name="loading_error">Unable to run query.  Check internet.</string>
