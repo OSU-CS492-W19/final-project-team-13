@@ -16,9 +16,9 @@ public interface MovieRepoDao {
     @Delete
     void delete(MovieRepo repo);
 
-    @Query("SELECT * FROM MovieRepo")
+    @Query("SELECT * FROM savedmovies")
     LiveData<List<MovieRepo>> getAllRepos();
 
-    @Query("SELECT * FROM MovieRepo WHERE full_name = :fullName LIMIT 1")
-    LiveData<MovieRepo> getRepoByName(String fullName);
+    @Query("SELECT * FROM savedmovies WHERE id = :id LIMIT 1")
+    LiveData<MovieRepo> getRepoByName(int id);
 }

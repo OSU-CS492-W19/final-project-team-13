@@ -26,8 +26,8 @@ public class MovieRepoRepository {
         return mMovieRepoDao.getAllRepos();
     }
 
-    public LiveData<MovieRepo> getMovieRepoByName(String fullName) {
-        return mMovieRepoDao.getRepoByName(fullName);
+    public LiveData<MovieRepo> getMovieRepoByName(int id) {
+        return mMovieRepoDao.getRepoByName(id);
     }
 
     private static class InsertAsyncTask extends AsyncTask<MovieRepo, Void, Void> {

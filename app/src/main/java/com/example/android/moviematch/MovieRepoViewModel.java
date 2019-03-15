@@ -29,7 +29,7 @@ public class MovieRepoViewModel extends AndroidViewModel {
         return mMovieRepoRepository.getAllMovieRepos();
     }
 
-    public LiveData<MovieRepo> getMovieRepoByName(String fullName) {
-        return mMovieRepoRepository.getMovieRepoByName(fullName);
+    public LiveData<MovieRepo> getMovieRepoByName(int id) {
+        return mMovieRepoRepository.getMovieRepoByName(id);
     }
 }

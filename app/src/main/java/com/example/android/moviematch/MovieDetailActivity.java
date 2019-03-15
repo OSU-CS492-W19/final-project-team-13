@@ -43,11 +43,11 @@ public class MovieDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(MovieUtils.EXTRA_MOVIE_REPO)) {
             mRepo = (MovieRepo) intent.getSerializableExtra(MovieUtils.EXTRA_MOVIE_REPO);
-            mRepoNameTV.setText(mRepo.full_name);
-            mRepoStarsTV.setText("" + mRepo.stargazers_count);
-            mRepoDescriptionTV.setText(mRepo.description);
+            //mRepoNameTV.setText(mRepo.full_name);
+            //mRepoStarsTV.setText("" + mRepo.stargazers_count);
+            //mRepoDescriptionTV.setText(mRepo.description);
 
-            mMovieRepoViewModel.getMovieRepoByName(mRepo.full_name).observe(this, new Observer<MovieRepo>() {
+            /*mMovieRepoViewModel.getMovieRepoByName(mRepo.full_name).observe(this, new Observer<MovieRepo>() {
                 @Override
                 public void onChanged(@Nullable MovieRepo repo) {
                     if (repo != null) {
@@ -58,7 +58,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                         mRepoBookmarkIV.setImageResource(R.drawable.ic_bookmark_border_black_24dp);
                     }
                 }
-            });
+            });*/
         }
 
         mRepoBookmarkIV.setOnClickListener(new View.OnClickListener() {
@@ -84,9 +84,6 @@ public class MovieDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_view_on_web:
-                viewRepoOnWeb();
-                return true;
             case R.id.action_share:
                 shareRepo();
                 return true;
@@ -95,19 +92,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
     }
 
-    public void viewRepoOnWeb() {
-        if (mRepo != null) {
-            Uri repoURI = Uri.parse(mRepo.html_url);
-            Intent intent = new Intent(Intent.ACTION_VIEW, repoURI);
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            }
-        }
-    }
-
     public void shareRepo() {
         if (mRepo != null) {
-            String shareText = getString(R.string.share_repo_text, mRepo.full_name, mRepo.html_url);
+            String shareText = getString(R.string.share_repo_text, mRepo.title, mRepo.overview);
             ShareCompat.IntentBuilder.from(this)
                     .setType("text/plain")
                     .setText(shareText)

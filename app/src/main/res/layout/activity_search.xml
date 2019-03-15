@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/drawer_layout_search"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:fitsSystemWindows="true"
@@ -13,13 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
         <EditText
             android:id="@+id/et_search_box"
@@ -69,7 +62,7 @@
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
-        android:id="@+id/nv_nav_drawer"
+        android:id="@+id/nv_nav_drawer_search"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"

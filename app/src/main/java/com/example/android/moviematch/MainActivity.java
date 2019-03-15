@@ -7,16 +7,19 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,7 +28,12 @@ import com.bumptech.glide.Glide;
 import com.example.android.moviematch.data.MovieRepo;
 import com.example.android.moviematch.utils.MovieUtils;
 
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<String>, NavigationView.OnNavigationItemSelectedListener {
@@ -41,22 +49,37 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
     private ImageView mImageView;
 
+    private TextView mTitle;
+    private TextView mRating;
+
+    private MovieUtils.MovieSearchResults mResults;
     private ArrayList<MovieRepo> mRepos;
+
+    private int NumberOfPages = 50;
+    private int RandomYear;
+    private int RandomPage;
+    private int RandomMovie;
+    private Calendar cal;
+
+    private boolean GrabPageNum = true;
+
+    private String sort;
+    private String filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mImageView = findViewById(R.id.main_img);
-        String ImgURL = MovieUtils.buildMoviePosterURL(Integer.toString(300), "2LqaLgk4Z226KkgPJuiOQ58wvrm.jpg");
-        Glide.with(this).load(ImgURL).into(mImageView);
-
         mLoadingErrorTV = findViewById(R.id.tv_loading_error);
         mLoadingPB = findViewById(R.id.pb_loading);
-        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout_main);
 
-        NavigationView navigationView = findViewById(R.id.nv_nav_drawer);
+        mTitle = findViewById(R.id.tv_title);
+        mRating = findViewById(R.id.tv_rating);
+        mImageView = findViewById(R.id.poster_img);
+
+        NavigationView navigationView = findViewById(R.id.nv_nav_drawer_main);
         navigationView.setNavigationItemSelectedListener(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -72,17 +95,20 @@ public class MainActivity extends AppCompatActivity
 
         getSupportLoaderManager().initLoader(MOVIE_SEARCH_LOADER_ID, null, this);
 
-        doMovieSearch();
+        //Get current year for upper bound
+        Date today = new Date();
+        cal = Calendar.getInstance();
+        cal.setTime(today);
 
-        /*searchButton.setOnClickListener(new View.OnClickListener() {
+        Button searchButton = findViewById(R.id.btn_refresh);
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String searchQuery = mSearchBoxET.getText().toString();
-                if (!TextUtils.isEmpty(searchQuery)) {
-                    doMovieSearch(searchQuery);
-                }
+                getRandomMovie();
             }
-        });*/
+        });
+
+        getRandomMovie();
     }
 
     @Override
@@ -96,20 +122,32 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void doMovieSearch() {
+    private void getRandomMovie() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String sort = ""; // = preferences.getString(getString(R.string.pref_sort_key),
+        sort = ""; // = preferences.getString(getString(R.string.pref_sort_key),
                 //getString(R.string.pref_sort_default));
-        String filter = ""; // = preferences.getString(getString(R.string.pref_language_key),
+        filter = ""; // = preferences.getString(getString(R.string.pref_language_key),
                 //getString(R.string.pref_language_default));
 
-        String url = MovieUtils.buildMovieDiscoverURL(sort, filter);
-        Log.d(TAG, "querying search URL: " + url);
+        RandomYear = randomGenerator(1950, cal.get(Calendar.YEAR));
+        RandomMovie = randomGenerator(0, 20);
+
+        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, filter);
+
+        Log.d("RandomYear", Integer.toString(RandomYear));
+        Log.d("RandomMovie", Integer.toString(RandomMovie));
+
+        Log.d("Half URL", url);
 
         Bundle args = new Bundle();
         args.putString(SEARCH_URL_KEY, url);
         mLoadingPB.setVisibility(View.VISIBLE);
         getSupportLoaderManager().restartLoader(MOVIE_SEARCH_LOADER_ID, args, this);
+    }
+
+    private int randomGenerator(int lower, int upper){
+        Random r = new Random();
+        return r.nextInt(upper-lower) + lower;
     }
 
     @Override
@@ -133,13 +171,62 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoadFinished(@NonNull Loader<String> loader, String s) {
         Log.d(TAG, "loader finished loading");
-        if (s != null) {
-            mLoadingErrorTV.setVisibility(View.INVISIBLE);
-            mRepos = MovieUtils.parseMovieSearchResults(s);
+
+        if(GrabPageNum){
+            GrabPageNum = false;
+            Log.d("GrabPageNum", "Setting to false");
+
+            if (s != null) {
+                mResults = MovieUtils.parseMovieResults(s);
+                NumberOfPages = mResults.total_pages;
+                Log.d("NumberOfPages", Integer.toString(NumberOfPages));
+
+                RandomPage = randomGenerator(0, NumberOfPages);
+                Log.d("RandomPage", Integer.toString(RandomPage));
+
+
+                if(RandomPage > 1000){
+                    RandomPage = randomGenerator(0, 1000);
+                    Log.d("RandomPage", Integer.toString(RandomPage));
+                }
+
+                String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, RandomPage, filter);
+                Log.d("Full URL", url);
+
+
+                Bundle args = new Bundle();
+                args.putString(SEARCH_URL_KEY, url);
+                getSupportLoaderManager().restartLoader(MOVIE_SEARCH_LOADER_ID, args, this);
+            } else {
+                mLoadingErrorTV.setVisibility(View.VISIBLE);
+            }
+            mLoadingPB.setVisibility(View.INVISIBLE);
         } else {
-            mLoadingErrorTV.setVisibility(View.VISIBLE);
+            GrabPageNum = true;
+            Log.d("GrabPageNum", "Re-setting to true");
+
+            if (s != null) {
+                mLoadingErrorTV.setVisibility(View.INVISIBLE);
+                mResults = MovieUtils.parseMovieResults(s);
+                mRepos = mResults.results;
+
+                Log.d("Results", "Results returned");
+
+                mTitle.setText(mRepos.get(RandomMovie).title);
+                mRating.setText(String.valueOf(mRepos.get(RandomMovie).vote_average));
+
+                Log.d("Title:Rating", mRepos.get(RandomMovie).title + ":" + mRepos.get(RandomMovie).vote_average);
+
+                String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
+
+                Log.d("iconURL", iconURL);
+
+                Glide.with(this).load(iconURL).into(mImageView);
+            } else {
+                mLoadingErrorTV.setVisibility(View.VISIBLE);
+            }
+            mLoadingPB.setVisibility(View.INVISIBLE);
         }
-        mLoadingPB.setVisibility(View.INVISIBLE);
     }
 
     @Override

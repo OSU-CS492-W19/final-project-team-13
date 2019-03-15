@@ -67,7 +67,7 @@ public class MovieSearchAdapter extends RecyclerView.Adapter<MovieSearchAdapter.
         }
 
         public void bind(MovieRepo repo) {
-            mSearchResultTV.setText(repo.full_name);
+            mSearchResultTV.setText(repo.title);
         }
     }
 }

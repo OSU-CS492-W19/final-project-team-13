@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
+    android:id="@+id/drawer_layout_main"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:fitsSystemWindows="true"
@@ -24,13 +24,58 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp">
+            android:padding="8dp"
+            android:background="@color/colorBackground">
 
-            <ImageView
-                android:id="@+id/main_img"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="20dp" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/poster_img"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight="0.5"
+                    android:padding="10dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0.5">
+
+                    <TextView
+                        android:id="@+id/tv_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textAlignment="center"
+                        android:padding="10dp"
+                        android:textSize="40sp"
+                        android:text="Captain Marvel"/>
+
+                    <TextView
+                        android:id="@+id/tv_rating"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTextSecondary"
+                        android:textAlignment="center"
+                        android:textSize="20sp"
+                        android:text="10.5/10 Stars" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="500dp"
+                android:text="Randomize"/>
 
             <TextView
                 android:id="@+id/tv_loading_error"
@@ -45,7 +90,7 @@
                 android:id="@+id/pb_loading"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
-                android:layout_gravity="top|center_horizontal"
+                android:layout_gravity="center"
                 android:layout_marginTop="32dp"
                 android:visibility="invisible"/>
 
@@ -54,10 +99,12 @@
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
-        android:id="@+id/nv_nav_drawer"
+        android:id="@+id/nv_nav_drawer_main"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/colorBackground"
+        app:itemTextColor="@color/colorTextPrimary"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_drawer_header"
         app:menu="@menu/nav_drawer"/>

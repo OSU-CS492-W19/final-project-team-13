@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">Movie Match</string>
-    <string name="search_box_hint">Search GitHub...</string>
-    <string name="search_button_text">Do Search</string>
+    <string name="search_box_hint">Search for a movie...</string>
+    <string name="search_button_text">Search</string>
     <string name="loading_error">Unable to run query.  Check internet.</string>
     <string name="action_share">Share</string>
-    <string name="action_view_on_web">View repo on GitHub</string>
     <string name="share_chooser_title">How do you want to share this repo?</string>
     <string name="share_repo_text">%1$s: %2$s</string>
 

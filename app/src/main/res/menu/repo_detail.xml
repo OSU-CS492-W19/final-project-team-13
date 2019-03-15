@@ -7,8 +7,4 @@
         android:title="@string/action_share"
         android:icon="@drawable/ic_action_share"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_view_on_web"
-        android:title="@string/action_view_on_web"
-        app:showAsAction="never" />
 </menu>

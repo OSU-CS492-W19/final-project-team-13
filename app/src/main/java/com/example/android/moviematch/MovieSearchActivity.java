@@ -8,9 +8,11 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -27,8 +29,7 @@ import com.example.android.moviematch.utils.MovieUtils;
 import java.util.ArrayList;
 
 public class MovieSearchActivity extends AppCompatActivity
-        implements MovieSearchAdapter.OnSearchItemClickListener, LoaderManager.LoaderCallbacks<String>,
-            NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, MovieSearchAdapter.OnSearchItemClickListener, LoaderManager.LoaderCallbacks<String>{
 
     private static final String TAG = MovieSearchActivity.class.getSimpleName();
     private static final String REPOS_ARRAY_KEY = "movieRepos";
@@ -43,6 +44,9 @@ public class MovieSearchActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
 
     private MovieSearchAdapter mMovieSearchAdapter;
+
+    private int NumberOfPages;
+    private MovieUtils.MovieSearchResults mResults;
     private ArrayList<MovieRepo> mRepos;
 
     @Override
@@ -54,13 +58,22 @@ public class MovieSearchActivity extends AppCompatActivity
         mSearchResultsRV = findViewById(R.id.rv_search_results);
         mLoadingErrorTV = findViewById(R.id.tv_loading_error);
         mLoadingPB = findViewById(R.id.pb_loading);
-        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout_search);
 
         mSearchResultsRV.setLayoutManager(new LinearLayoutManager(this));
         mSearchResultsRV.setHasFixedSize(true);
 
         mMovieSearchAdapter = new MovieSearchAdapter(this);
         mSearchResultsRV.setAdapter(mMovieSearchAdapter);
+
+        NavigationView navigationView = findViewById(R.id.nv_nav_drawer_search);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)) {
             mRepos = (ArrayList<MovieRepo>) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
@@ -133,7 +146,10 @@ public class MovieSearchActivity extends AppCompatActivity
         if (s != null) {
             mLoadingErrorTV.setVisibility(View.INVISIBLE);
             mSearchResultsRV.setVisibility(View.VISIBLE);
-            mRepos = MovieUtils.parseMovieSearchResults(s);
+            mResults = MovieUtils.parseMovieResults(s);
+            mRepos = mResults.results;
+            NumberOfPages = mResults.total_pages;
+
             mMovieSearchAdapter.updateSearchResults(mRepos);
         } else {
             mLoadingErrorTV.setVisibility(View.VISIBLE);
@@ -151,7 +167,9 @@ public class MovieSearchActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         mDrawerLayout.closeDrawers();
         switch (menuItem.getItemId()) {
-            case R.id.nav_search:
+            case R.id.nav_home:
+                Intent mainIntent = new Intent(this, MainActivity.class);
+                startActivity(mainIntent);
                 return true;
             case R.id.nav_settings:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
