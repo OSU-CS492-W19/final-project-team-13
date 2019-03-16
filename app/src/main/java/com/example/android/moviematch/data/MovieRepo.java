@@ -13,6 +13,7 @@ public class MovieRepo implements Serializable {
     public int id;
 
     public String poster_path;
+    public String backdrop_path;
     public String overview;
     public String release_date;
     public String original_title;
@@ -20,4 +21,5 @@ public class MovieRepo implements Serializable {
     public String title;
     public Double popularity;
     public Double vote_average;
+    public Integer vote_count;
 }

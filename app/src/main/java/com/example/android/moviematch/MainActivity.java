@@ -7,29 +7,30 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v4.view.GravityCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.android.moviematch.data.MovieRepo;
 import com.example.android.moviematch.utils.MovieUtils;
 
-import java.time.LocalDate;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,9 +49,14 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mLoadingPB;
     private DrawerLayout mDrawerLayout;
     private ImageView mImageView;
+    private ImageView mImagePoster;
+    private TextView mImageText;
+    private View mView;
 
     private TextView mTitle;
     private TextView mRating;
+    private TextView mOverview;
+    private TextView mExtra;
 
     private MovieUtils.MovieSearchResults mResults;
     private ArrayList<MovieRepo> mRepos;
@@ -66,6 +72,8 @@ public class MainActivity extends AppCompatActivity
     private String sort;
     private String filter;
 
+    private GestureDetector mDetector;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,10 +85,20 @@ public class MainActivity extends AppCompatActivity
 
         mTitle = findViewById(R.id.tv_title);
         mRating = findViewById(R.id.tv_rating);
+        mOverview = findViewById(R.id.tv_overview);
+        mExtra = findViewById(R.id.tv_extra);
         mImageView = findViewById(R.id.poster_img);
+        mImagePoster = findViewById(R.id.poster_background);
+        mImageText = findViewById(R.id.No_Image);
+
+        mView = findViewById(R.id.main_view);
+        mDetector = new GestureDetector(this, new MyGestureListener());
+        mView.setOnTouchListener(touchListener);
 
         NavigationView navigationView = findViewById(R.id.nv_nav_drawer_main);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -174,56 +192,20 @@ public class MainActivity extends AppCompatActivity
 
         if(GrabPageNum){
             GrabPageNum = false;
-            Log.d("GrabPageNum", "Setting to false");
-
             if (s != null) {
-                mResults = MovieUtils.parseMovieResults(s);
-                NumberOfPages = mResults.total_pages;
-                Log.d("NumberOfPages", Integer.toString(NumberOfPages));
-
-                RandomPage = randomGenerator(0, NumberOfPages);
-                Log.d("RandomPage", Integer.toString(RandomPage));
-
-
-                if(RandomPage > 1000){
-                    RandomPage = randomGenerator(0, 1000);
-                    Log.d("RandomPage", Integer.toString(RandomPage));
-                }
-
-                String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, RandomPage, filter);
-                Log.d("Full URL", url);
-
-
-                Bundle args = new Bundle();
-                args.putString(SEARCH_URL_KEY, url);
-                getSupportLoaderManager().restartLoader(MOVIE_SEARCH_LOADER_ID, args, this);
+                createFullURL(s);
             } else {
                 mLoadingErrorTV.setVisibility(View.VISIBLE);
+                mLoadingPB.setVisibility(View.INVISIBLE);
             }
-            mLoadingPB.setVisibility(View.INVISIBLE);
         } else {
             GrabPageNum = true;
-            Log.d("GrabPageNum", "Re-setting to true");
-
             if (s != null) {
-                mLoadingErrorTV.setVisibility(View.INVISIBLE);
-                mResults = MovieUtils.parseMovieResults(s);
-                mRepos = mResults.results;
-
-                Log.d("Results", "Results returned");
-
-                mTitle.setText(mRepos.get(RandomMovie).title);
-                mRating.setText(String.valueOf(mRepos.get(RandomMovie).vote_average));
-
-                Log.d("Title:Rating", mRepos.get(RandomMovie).title + ":" + mRepos.get(RandomMovie).vote_average);
-
-                String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
-
-                Log.d("iconURL", iconURL);
-
-                Glide.with(this).load(iconURL).into(mImageView);
+                assignValues(s);
             } else {
                 mLoadingErrorTV.setVisibility(View.VISIBLE);
+                mImageView.setVisibility(View.INVISIBLE);
+                mImageText.setVisibility(View.VISIBLE);
             }
             mLoadingPB.setVisibility(View.INVISIBLE);
         }
@@ -252,6 +234,101 @@ public class MainActivity extends AppCompatActivity
                 return true;
             default:
                 return false;
+        }
+    }
+
+    View.OnTouchListener touchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return mDetector.onTouchEvent(event);
+        }
+    };
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        private int MIN_SWIPE_DISTANCE_X = 400;
+        private int MAX_SWIPE_DISTANCE_X = 1000;
+
+        /*
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        } */
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            float deltaX = e1.getX() - e2.getX();
+            float deltaXAbs = Math.abs(deltaX);
+            if((deltaXAbs >= MIN_SWIPE_DISTANCE_X) && (deltaXAbs <= MAX_SWIPE_DISTANCE_X))
+            {
+                if(deltaX > 0)
+                {
+                    Log.d("Swipe", "Swipe to Left");
+                    getRandomMovie();
+                } else {
+                    Log.d("Swipe", "Swipe to Right");
+                    getRandomMovie();
+                }
+            }
+            return true;
+        }
+    }
+
+    public void createFullURL(String s){
+        mResults = MovieUtils.parseMovieResults(s);
+        NumberOfPages = mResults.total_pages;
+        RandomPage = randomGenerator(1, NumberOfPages);
+
+        if(RandomPage > 1000){
+            RandomPage = randomGenerator(1, 1000);
+        }
+
+        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, RandomPage, filter);
+        Log.d("Full URL", url);
+
+        Bundle args = new Bundle();
+        args.putString(SEARCH_URL_KEY, url);
+        getSupportLoaderManager().restartLoader(MOVIE_SEARCH_LOADER_ID, args, this);
+    }
+
+    public void assignValues(String s){
+        mLoadingErrorTV.setVisibility(View.INVISIBLE);
+        mResults = MovieUtils.parseMovieResults(s);
+        mRepos = mResults.results;
+
+        String rating = "Rating: " + String.valueOf(mRepos.get(RandomMovie).vote_average) + "/10     Votes: " + String.valueOf(mRepos.get(RandomMovie).vote_count);
+        String extra = "Release Date: " + mRepos.get(RandomMovie).release_date + "     Language: " + mRepos.get(RandomMovie).original_language;
+        mTitle.setText(mRepos.get(RandomMovie).title);
+        mRating.setText(rating);
+        mOverview.setText(mRepos.get(RandomMovie).overview);
+        mExtra.setText(extra);
+
+        if(mRepos.get(RandomMovie).poster_path != null && mRepos.get(RandomMovie).backdrop_path != null) {
+            String posterURL = MovieUtils.buildMoviePosterURL(mRepos.get(RandomMovie).backdrop_path);
+            String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
+
+            Log.d("iconURL", iconURL);
+            Log.d("posterURL", posterURL);
+
+            mImageView.setVisibility(View.VISIBLE);
+            mImagePoster.setVisibility(View.VISIBLE);
+            mImageText.setVisibility(View.INVISIBLE);
+
+            Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
+            Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
+        } else if(mRepos.get(RandomMovie).poster_path != null){
+            String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
+
+            Log.d("iconURL", iconURL);
+
+            mImageView.setVisibility(View.VISIBLE);
+            mImagePoster.setVisibility(View.INVISIBLE);
+            mImageText.setVisibility(View.INVISIBLE);
+            Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
+        } else {
+            mImageView.setVisibility(View.INVISIBLE);
+            mImagePoster.setVisibility(View.INVISIBLE);
+            mImageText.setVisibility(View.VISIBLE);
         }
     }
 }
