@@ -1,5 +1,6 @@
 package com.example.android.moviematch;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -25,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity
     private String filter;
 
     private GestureDetector mDetector;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +110,8 @@ public class MainActivity extends AppCompatActivity
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu);
 
+        context = getApplicationContext();
+
         if (savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)) {
             mRepos = (ArrayList<MovieRepo>) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
         }
@@ -117,14 +122,6 @@ public class MainActivity extends AppCompatActivity
         Date today = new Date();
         cal = Calendar.getInstance();
         cal.setTime(today);
-
-        Button searchButton = findViewById(R.id.btn_refresh);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getRandomMovie();
-            }
-        });
 
         getRandomMovie();
     }
@@ -151,11 +148,6 @@ public class MainActivity extends AppCompatActivity
         RandomMovie = randomGenerator(0, 20);
 
         String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, filter);
-
-        Log.d("RandomYear", Integer.toString(RandomYear));
-        Log.d("RandomMovie", Integer.toString(RandomMovie));
-
-        Log.d("Half URL", url);
 
         Bundle args = new Bundle();
         args.putString(SEARCH_URL_KEY, url);
@@ -263,10 +255,12 @@ public class MainActivity extends AppCompatActivity
             {
                 if(deltaX > 0)
                 {
-                    Log.d("Swipe", "Swipe to Left");
+                    CharSequence text = "Detected Left Swipe... (Saved)";
+                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
                     getRandomMovie();
                 } else {
-                    Log.d("Swipe", "Swipe to Right");
+                    CharSequence text = "Detected Right Swipe...(Pass)";
+                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
                     getRandomMovie();
                 }
             }

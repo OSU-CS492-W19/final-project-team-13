@@ -69,9 +69,6 @@ public class MovieSearchActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nv_nav_drawer_search);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu);
 
