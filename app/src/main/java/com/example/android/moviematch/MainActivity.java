@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -21,8 +20,6 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -61,7 +58,8 @@ public class MainActivity extends AppCompatActivity
     private TextView mExtra;
 
     private MovieUtils.MovieSearchResults mResults;
-    private ArrayList<MovieRepo> mRepos;
+    private ArrayList<MovieRepo> mMovieList;
+    private MovieRepo mMovie;
 
     private int NumberOfPages = 50;
     private int RandomYear;
@@ -112,10 +110,6 @@ public class MainActivity extends AppCompatActivity
 
         context = getApplicationContext();
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)) {
-            mRepos = (ArrayList<MovieRepo>) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
-        }
-
         getSupportLoaderManager().initLoader(MOVIE_SEARCH_LOADER_ID, null, this);
 
         //Get current year for upper bound
@@ -123,7 +117,12 @@ public class MainActivity extends AppCompatActivity
         cal = Calendar.getInstance();
         cal.setTime(today);
 
-        getRandomMovie();
+        if (savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)) {
+            mMovie = (MovieRepo) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
+            assignValues();
+        } else {
+            getRandomMovie();
+        }
     }
 
     @Override
@@ -163,8 +162,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mRepos != null) {
-            outState.putSerializable(REPOS_ARRAY_KEY, mRepos);
+        if (mMovie != null) {
+            outState.putSerializable(REPOS_ARRAY_KEY, mMovie);
         }
     }
 
@@ -193,7 +192,11 @@ public class MainActivity extends AppCompatActivity
         } else {
             GrabPageNum = true;
             if (s != null) {
-                assignValues(s);
+                mLoadingErrorTV.setVisibility(View.INVISIBLE);
+                mResults = MovieUtils.parseMovieResults(s);
+                mMovieList = mResults.results;
+                mMovie = mMovieList.get(RandomMovie);
+                assignValues();
             } else {
                 mLoadingErrorTV.setVisibility(View.VISIBLE);
                 mImageView.setVisibility(View.INVISIBLE);
@@ -241,12 +244,6 @@ public class MainActivity extends AppCompatActivity
         private int MIN_SWIPE_DISTANCE_X = 400;
         private int MAX_SWIPE_DISTANCE_X = 1000;
 
-        /*
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
-        } */
-
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             float deltaX = e1.getX() - e2.getX();
@@ -277,6 +274,14 @@ public class MainActivity extends AppCompatActivity
             RandomPage = randomGenerator(1, 1000);
         }
 
+        if(sort == null){
+            sort = "";
+        }
+
+        if(filter == null){
+            filter = "";
+        }
+
         String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, RandomPage, filter);
         Log.d("Full URL", url);
 
@@ -285,21 +290,17 @@ public class MainActivity extends AppCompatActivity
         getSupportLoaderManager().restartLoader(MOVIE_SEARCH_LOADER_ID, args, this);
     }
 
-    public void assignValues(String s){
-        mLoadingErrorTV.setVisibility(View.INVISIBLE);
-        mResults = MovieUtils.parseMovieResults(s);
-        mRepos = mResults.results;
-
-        String rating = "Rating: " + String.valueOf(mRepos.get(RandomMovie).vote_average) + "/10     Votes: " + String.valueOf(mRepos.get(RandomMovie).vote_count);
-        String extra = "Release Date: " + mRepos.get(RandomMovie).release_date + "     Language: " + mRepos.get(RandomMovie).original_language;
-        mTitle.setText(mRepos.get(RandomMovie).title);
+    public void assignValues(){
+        String rating = "Rating: " + String.valueOf(mMovie.vote_average) + "/10     Votes: " + String.valueOf(mMovie.vote_count);
+        String extra = "Release Date: " + mMovie.release_date + "     Language: " + mMovie.original_language;
+        mTitle.setText(mMovie.title);
         mRating.setText(rating);
-        mOverview.setText(mRepos.get(RandomMovie).overview);
+        mOverview.setText(mMovie.overview);
         mExtra.setText(extra);
 
-        if(mRepos.get(RandomMovie).poster_path != null && mRepos.get(RandomMovie).backdrop_path != null) {
-            String posterURL = MovieUtils.buildMoviePosterURL(mRepos.get(RandomMovie).backdrop_path);
-            String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
+        if(mMovie.poster_path != null && mMovie.backdrop_path != null) {
+            String posterURL = MovieUtils.buildMoviePosterURL(mMovie.backdrop_path);
+            String iconURL = MovieUtils.buildMoviePosterURL(300, mMovie.poster_path);
 
             Log.d("iconURL", iconURL);
             Log.d("posterURL", posterURL);
@@ -310,8 +311,8 @@ public class MainActivity extends AppCompatActivity
 
             Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
             Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
-        } else if(mRepos.get(RandomMovie).poster_path != null){
-            String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
+        } else if(mMovie.poster_path != null){
+            String iconURL = MovieUtils.buildMoviePosterURL(300, mMovie.poster_path);
 
             Log.d("iconURL", iconURL);
 
