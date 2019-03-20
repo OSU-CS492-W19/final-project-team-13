@@ -139,8 +139,8 @@ public class MainActivity extends AppCompatActivity
 
     private void getRandomMovie() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sort = ""; // = preferences.getString(getString(R.string.pref_sort_key),
-                //getString(R.string.pref_sort_default));
+        sort = preferences.getString(getString(R.string.pref_sort_key),
+                                    getString(R.string.pref_sort_default));
         filter = ""; // = preferences.getString(getString(R.string.pref_language_key),
                 //getString(R.string.pref_language_default));
 

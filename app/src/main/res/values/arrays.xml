@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pref_sort_entries">
-        <item>@string/pref_sort_entry_best_match</item>
-        <item>@string/pref_sort_entry_stars</item>
-        <item>@string/pref_sort_entry_forks</item>
-        <item>@string/pref_sort_entry_updated</item>
+        <item>Best Match</item>
+        <item>Vote Average</item>
+        <item>Popularity</item>
+        <item>Release Year</item>
+        <item>Revenue</item>
     </string-array>
 
     <string-array name="pref_sort_values">
         <item></item>
-        <item>@string/pref_sort_value_stars</item>
-        <item>@string/pref_sort_value_forks</item>
-        <item>@string/pref_sort_value_updated</item>
+        <item>vote_average.desc</item>
+        <item>popularity.desc</item>
+        <item>release_date.desc</item> <!-- This one may not work -->
+        <item>revenue.desc</item>
     </string-array>
 
     <string-array name="pref_language_entries">
