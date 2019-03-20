@@ -11,33 +11,24 @@
         android:defaultValue="@string/pref_sort_default"/>
 
     <EditTextPreference
-        android:key="@string/pref_user_key"
-        android:title="@string/pref_user_title"/>
+        android:key="@string/pref_vote_count_key"
+        android:title="@string/pref_vote_count_title"/>
+
+    <EditTextPreference
+        android:key="@string/pref_vote_avg_key"
+        android:title="@string/pref_vote_avg_title"/>
+
+    <EditTextPreference
+        android:key="@string/pref_release_year_key"
+        android:title="@string/pref_release_year_title"/>
 
     <ListPreference
-        android:key="@string/pref_language_key"
-        android:title="@string/pref_language_title"
+        android:key="@string/pref_genre_key"
+        android:title="@string/pref_genre_title"
         android:summary="%s"
-        android:dialogTitle="@string/pref_language_title"
-        android:entries="@array/pref_language_entries"
-        android:entryValues="@array/pref_language_values"
-        android:defaultValue="@string/pref_language_default" />
-
-    <PreferenceCategory android:title="@string/pref_in_title">
-        <CheckBoxPreference
-            android:key="@string/pref_in_name_key"
-            android:title="@string/pref_in_name_title"
-            android:defaultValue="true" />
-
-        <CheckBoxPreference
-            android:key="@string/pref_in_description_key"
-            android:title="@string/pref_in_description_title"
-            android:defaultValue="true" />
-
-        <CheckBoxPreference
-            android:key="@string/pref_in_readme_key"
-            android:title="@string/pref_in_readme_title"
-            android:defaultValue="false" />
-    </PreferenceCategory>
+        android:dialogTitle="@string/pref_genre_title"
+        android:entries="@array/pref_genre_entries"
+        android:entryValues="@array/pref_genre_values"
+        android:defaultValue="@string/pref_genre_default" />
 
 </PreferenceScreen>

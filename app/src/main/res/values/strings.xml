@@ -19,35 +19,22 @@
     <string name="pref_sort_title">Sort by</string>
     <string name="pref_sort_default"></string>
 
+    <!-- Strings for Vote Count Minimum -->
+    <string name="pref_vote_count_key">vote_count.gte</string>
+    <string name="pref_vote_count_title">Minimum Vote Count</string>
 
-    <!-- Strings for sort-by preference -->
-    <string name="pref_sort_entry_best_match">Best match</string>
-    <string name="pref_sort_entry_stars">Stars</string>
-    <string name="pref_sort_value_stars" translatable="false">stars</string>
-    <string name="pref_sort_entry_forks">Forks</string>
-    <string name="pref_sort_value_forks" translatable="false">forks</string>
-    <string name="pref_sort_entry_updated">Most-recently updated</string>
-    <string name="pref_sort_value_updated" translatable="false">updated</string>
+    <!-- Strings for Minimum Rating -->
+    <string name="pref_vote_avg_key">vote_average.gte</string>
+    <string name="pref_vote_avg_title">Min. Average Rating (0.0 to 10.0)</string>
 
-    <!-- Strings for programming language preference -->
-    <string name="pref_language_key" translatable="false">pref_language</string>
-    <string name="pref_language_title">Programming language</string>
-    <string name="pref_language_default"></string>
-    <string name="pref_language_entry_any">Any language</string>
-    <string name="pref_language_entry_c">C</string>
-    <string name="pref_language_value_c" translatable="false">c</string>
-    <string name="pref_language_entry_cpp">C++</string>
-    <string name="pref_language_value_cpp" translatable="false">c++</string>
-    <string name="pref_language_entry_java">Java</string>
-    <string name="pref_language_value_java" translatable="false">java</string>
-    <string name="pref_language_entry_kotlin">Kotlin</string>
-    <string name="pref_language_value_kotlin" translatable="false">kotlin</string>
-    <string name="pref_language_entry_javascript">Javascript</string>
-    <string name="pref_language_value_javascript" translatable="false">javascript</string>
-    <string name="pref_language_entry_rust">Rust</string>
-    <string name="pref_language_value_rust" translatable="false">rust</string>
-    <string name="pref_language_entry_python">Python</string>
-    <string name="pref_language_value_python" translatable="false">python</string>
+    <!-- Strings for Release Date -->
+    <string name="pref_release_year_key">primary_release_date.gte</string>
+    <string name="pref_release_year_title">Minimum Release Year</string>
+
+    <!-- Strings for genre preference -->
+    <string name="pref_genre_key" translatable="false">with_genres</string>
+    <string name="pref_genre_title">Genre</string>
+    <string name="pref_genre_default">1950</string>
 
     <!-- Strings for search-in preference -->
     <string name="pref_in_title">Search in</string>

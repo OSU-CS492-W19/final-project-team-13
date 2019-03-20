@@ -6,33 +6,37 @@
         <item>Popularity</item>
         <item>Release Year</item>
         <item>Revenue</item>
+        <item>Vote Count</item>
     </string-array>
 
     <string-array name="pref_sort_values">
         <item></item>
         <item>vote_average.desc</item>
         <item>popularity.desc</item>
-        <item>release_date.desc</item> <!-- This one may not work -->
+        <item>primary_release_date.desc</item> <!-- This one may not work -->
         <item>revenue.desc</item>
+        <item>vote_count.desc</item>
     </string-array>
 
-    <string-array name="pref_language_entries">
-        <item>@string/pref_language_entry_any</item>
-        <item>@string/pref_language_entry_c</item>
-        <item>@string/pref_language_entry_cpp</item>
-        <item>@string/pref_language_entry_java</item>
-        <item>@string/pref_language_entry_javascript</item>
-        <item>@string/pref_language_entry_rust</item>
-        <item>@string/pref_language_entry_python</item>
+    <string-array name="pref_genre_entries">
+        <item>Any Genre</item>
+        <item>Horror</item>
+        <item>Science Fiction</item>
+        <item>Action</item>
+        <item>Comedy</item>
+        <item>Drama</item>
+        <item>Romance</item>
+        <item>Thriller</item>
     </string-array>
 
-    <string-array name="pref_language_values">
+    <string-array name="pref_genre_values">
         <item></item>
-        <item>@string/pref_language_value_c</item>
-        <item>@string/pref_language_value_cpp</item>
-        <item>@string/pref_language_value_java</item>
-        <item>@string/pref_language_value_javascript</item>
-        <item>@string/pref_language_value_rust</item>
-        <item>@string/pref_language_value_python</item>
+        <item>27</item>
+        <item>878</item>
+        <item>28</item>
+        <item>35</item>
+        <item>18</item>
+        <item>10749</item>
+        <item>53</item>
     </string-array>
 </resources>
