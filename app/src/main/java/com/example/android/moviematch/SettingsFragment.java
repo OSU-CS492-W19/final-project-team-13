@@ -10,8 +10,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.prefs);
         EditTextPreference votepref = (EditTextPreference) findPreference(getString(R.string.pref_vote_count_key));
-        EditTextPreference ratingpref = (EditTextPreference) findPreference(getString(R.string.pref_vote_count_key));
-        EditTextPreference releasepref = (EditTextPreference) findPreference(getString(R.string.pref_vote_count_key));
+        EditTextPreference ratingpref = (EditTextPreference) findPreference(getString(R.string.pref_vote_avg_key));
+        EditTextPreference releasepref = (EditTextPreference) findPreference(getString(R.string.pref_release_year_key));
         votepref.setSummary(votepref.getText());
         ratingpref.setSummary(ratingpref.getText());
         releasepref.setSummary(releasepref.getText());
