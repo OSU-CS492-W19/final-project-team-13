@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -131,6 +132,9 @@ public class MainActivity extends AppCompatActivity
             case android.R.id.home:
                 mDrawerLayout.openDrawer(Gravity.START);
                 return true;
+            case R.id.action_share:
+                shareRepo();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -241,7 +245,7 @@ public class MainActivity extends AppCompatActivity
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        private int MIN_SWIPE_DISTANCE_X = 400;
+        private int MIN_SWIPE_DISTANCE_X = 300;
         private int MAX_SWIPE_DISTANCE_X = 1000;
 
         @Override
@@ -324,6 +328,17 @@ public class MainActivity extends AppCompatActivity
             mImageView.setVisibility(View.INVISIBLE);
             mImagePoster.setVisibility(View.INVISIBLE);
             mImageText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void shareRepo() {
+        if (mMovie != null) {
+            String shareText = getString(R.string.share_repo_text, mMovie.title, mMovie.overview);
+            ShareCompat.IntentBuilder.from(this)
+                    .setType("text/plain")
+                    .setText(shareText)
+                    .setChooserTitle(R.string.share_chooser_title)
+                    .startChooser();
         }
     }
 }
