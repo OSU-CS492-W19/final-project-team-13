@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.repo_detail, menu);
+        getMenuInflater().inflate(R.menu.main_repo, menu);
         return true;
     }
 

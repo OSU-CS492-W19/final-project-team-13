@@ -2,11 +2,7 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/action_save"
-        android:title="save"
-        android:icon="@drawable/ic_bookmark_border_black_24dp"
-        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/action_share"
         android:title="@string/action_share"
