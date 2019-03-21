@@ -78,6 +78,10 @@ public class MainActivity extends AppCompatActivity
 
     private String sort;
     private String filter;
+    private String vote_count;
+    private String avg_rating;
+    private String release_date;
+    private String genre;
 
     private GestureDetector mDetector;
     private Context context;
@@ -160,15 +164,23 @@ public class MainActivity extends AppCompatActivity
 
     private void getRandomMovie() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sort = ""; // = preferences.getString(getString(R.string.pref_sort_key),
-                //getString(R.string.pref_sort_default));
+        sort = preferences.getString(getString(R.string.pref_sort_key),
+                                    getString(R.string.pref_sort_default));
         filter = ""; // = preferences.getString(getString(R.string.pref_language_key),
                 //getString(R.string.pref_language_default));
+        vote_count = preferences.getString(getString(R.string.pref_vote_count_key), "");
+        avg_rating = preferences.getString(getString(R.string.pref_vote_avg_key), "");
+        release_date = preferences.getString(getString(R.string.pref_release_year_key), "0");
+        if (release_date.equals("")){
+            release_date = "0";
+        }
+        genre = preferences.getString(getString(R.string.pref_genre_key), getString(R.string.pref_genre_default));
 
-        RandomYear = randomGenerator(1950, cal.get(Calendar.YEAR));
+        //default is set to 1950
+        RandomYear = randomGenerator(Integer.parseInt(release_date), cal.get(Calendar.YEAR));
         RandomMovie = randomGenerator(0, 20);
 
-        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, filter);
+        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, vote_count, avg_rating, genre);
 
         Bundle args = new Bundle();
         args.putString(SEARCH_URL_KEY, url);
@@ -178,6 +190,11 @@ public class MainActivity extends AppCompatActivity
 
     private int randomGenerator(int lower, int upper){
         Random r = new Random();
+        //error: Does not work if lower is same as upper
+        if (upper - lower <= 0){
+            lower = upper - 1;
+        }
+        Log.d(TAG, "randomGenerator: " + r.nextInt(upper-lower) + lower);
         return r.nextInt(upper-lower) + lower;
     }
 
@@ -302,15 +319,7 @@ public class MainActivity extends AppCompatActivity
             RandomPage = randomGenerator(1, 1000);
         }
 
-        if(sort == null){
-            sort = "";
-        }
-
-        if(filter == null){
-            filter = "";
-        }
-
-        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, RandomPage, filter);
+        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, RandomPage, vote_count, avg_rating, genre);
         Log.d("Full URL", url);
 
         Bundle args = new Bundle();
@@ -330,28 +339,37 @@ public class MainActivity extends AppCompatActivity
             String posterURL = MovieUtils.buildMoviePosterURL(mMovie.backdrop_path);
             String iconURL = MovieUtils.buildMoviePosterURL(300, mMovie.poster_path);
 
-            Log.d("iconURL", iconURL);
-            Log.d("posterURL", posterURL);
+            if (mRepos.get(RandomMovie).poster_path != null && mRepos.get(RandomMovie).backdrop_path != null) {
+                String posterURL = MovieUtils.buildMoviePosterURL(mRepos.get(RandomMovie).backdrop_path);
+                String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
 
-            mImageView.setVisibility(View.VISIBLE);
-            mImagePoster.setVisibility(View.VISIBLE);
-            mImageText.setVisibility(View.INVISIBLE);
+                Log.d("iconURL", iconURL);
+                Log.d("posterURL", posterURL);
 
+                mImageView.setVisibility(View.VISIBLE);
+                mImagePoster.setVisibility(View.VISIBLE);
+                mImageText.setVisibility(View.INVISIBLE);
             Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
             Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
         } else if(mMovie.poster_path != null){
             String iconURL = MovieUtils.buildMoviePosterURL(300, mMovie.poster_path);
 
-            Log.d("iconURL", iconURL);
+                Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
+                Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
+            } else if (mRepos.get(RandomMovie).poster_path != null) {
+                String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
 
-            mImageView.setVisibility(View.VISIBLE);
-            mImagePoster.setVisibility(View.INVISIBLE);
-            mImageText.setVisibility(View.INVISIBLE);
-            Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
-        } else {
-            mImageView.setVisibility(View.INVISIBLE);
-            mImagePoster.setVisibility(View.INVISIBLE);
-            mImageText.setVisibility(View.VISIBLE);
+                Log.d("iconURL", iconURL);
+
+                mImageView.setVisibility(View.VISIBLE);
+                mImagePoster.setVisibility(View.INVISIBLE);
+                mImageText.setVisibility(View.INVISIBLE);
+                Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
+            } else {
+                mImageView.setVisibility(View.INVISIBLE);
+                mImagePoster.setVisibility(View.INVISIBLE);
+                mImageText.setVisibility(View.VISIBLE);
+            }
         }
     }
 
