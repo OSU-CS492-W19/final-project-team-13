@@ -18,7 +18,7 @@ public class MovieUtils {
 
     private final static String MOVIE_SEARCH_QUERY_PARAM = "query";
     private final static String MOVIE_DISCOVER_SORT_PARAM = "sort_by";
-    private final static String MOVIE_DISCOVER_RD_PARAM = "primary_release_date.gte";
+    private final static String MOVIE_DISCOVER_RD_PARAM = "year";
     private final static String MOVIE_DISCOVER_PAGE_PARAM = "page";
     private final static String MOVIE_DISCOVER_FILTER_RELEASE_YEAR_PARAM = "primary_release_year";
     private final static String MOVIE_DISCOVER_VOTE_COUNT_PARAM = "vote_count.gte";
