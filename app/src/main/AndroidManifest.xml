@@ -35,7 +35,7 @@
             android:name="com.example.android.moviematch.MovieDetailActivity"
             android:parentActivityName="com.example.android.moviematch.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
-
+            
         </activity>
         <activity
             android:name="com.example.android.moviematch.MainActivity"
