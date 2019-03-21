@@ -9,8 +9,6 @@ import com.example.android.moviematch.utils.NetworkUtils;
 
 import java.io.IOException;
 
-import static com.example.android.moviematch.MainActivity.ChangedOrient;
-
 public class MovieSearchLoader extends AsyncTaskLoader<String> {
 
     private final static String TAG = MovieSearchLoader.class.getSimpleName();
@@ -28,7 +26,6 @@ public class MovieSearchLoader extends AsyncTaskLoader<String> {
         if (mURL != null) {
             if (mSearchResultsJSON != null) {
                 MainActivity.GrabPageNum = false;
-                ChangedOrient = true;
                 deliverResult(mSearchResultsJSON);
             } else {
                 forceLoad();

@@ -64,17 +64,8 @@
                                 android:layout_marginTop="90dp"
                                 android:textAlignment="center"
                                 android:text="@string/img_none"
-                                android:textSize="32sp"
-                                android:visibility="visible"/>
-
-                            <TextView
-                                android:id="@+id/tv_loading_error"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textSize="20sp"
-                                android:padding="16dp"
                                 android:visibility="invisible"
-                                android:text="@string/loading_error" />
+                                android:textSize="32sp" />
 
                             <ProgressBar
                                 android:id="@+id/pb_loading"
@@ -85,8 +76,6 @@
                                 android:visibility="visible"/>
 
                         </FrameLayout>
-
-
 
                     </RelativeLayout>
 
@@ -126,6 +115,50 @@
                 </LinearLayout>
 
             </ScrollView>
+
+            <LinearLayout
+                android:id="@+id/tv_loading_error"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:layout_marginTop="30dp"
+                    android:text="@string/loading_error"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:layout_width="100dip"
+                    android:layout_height="100dip"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ic_nav_home" />
+
+                <Button
+                    android:id="@+id/refresh_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/refresh_button"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/loading_error_totry"
+                    android:textAlignment="center"
+                    android:padding="20dp"
+                    android:textColor="@color/colorTextPrimary"
+                    android:textSize="18sp"
+                    android:visibility="visible" />
+
+            </LinearLayout>
 
         </FrameLayout>
 

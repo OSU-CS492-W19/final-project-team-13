@@ -1,18 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:id="@+id/drawer_layout_saved"
     android:layout_height="match_parent"
-    tools:context=".SavedMoviesActivity"
-    android:textColor="@color/colorTextPrimary">
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.example.android.moviematch.SavedMoviesActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_saved_repos"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
+        tools:context=".SavedMoviesActivity"
+        android:textColor="@color/colorTextPrimary"
         android:background="@color/colorBackground"
-        android:textColor="@color/colorTextPrimary"/>
+        android:orientation="vertical">
 
-</LinearLayout>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/saved_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_saved_repos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorTextPrimary"/>
+
+    </LinearLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nv_nav_drawer_saved"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@color/colorBackground"
+        app:itemTextColor="@color/colorTextPrimary"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_drawer_header"
+        app:menu="@menu/nav_drawer"/>
+
+</android.support.v4.widget.DrawerLayout>

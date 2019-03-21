@@ -9,18 +9,17 @@
     tools:context=".MovieDetailActivity"
     android:background="@color/colorBackground">
 
-    <LinearLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/detail_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:background="@color/colorBackground">
-
-
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorBackground">
 
         <ScrollView
             android:id="@+id/main_view"
@@ -116,10 +115,7 @@
 
         </ScrollView>
 
-        </FrameLayout>
-
-    </LinearLayout>
-
-
+    </FrameLayout>
 
 </LinearLayout>
+

@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -23,7 +24,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,13 +52,14 @@ public class MainActivity extends AppCompatActivity
 
     private static final int MOVIE_SEARCH_LOADER_ID = 0;
 
-    private TextView mLoadingErrorTV;
+    private LinearLayout mLoadingErrorFV;
     private ProgressBar mLoadingPB;
     private DrawerLayout mDrawerLayout;
     private ImageView mImageView;
     private ImageView mImagePoster;
-    private TextView mImageText;
+    private TextView mImageError;
     private View mView;
+    private Button refresh;
 
     private TextView mTitle;
     private TextView mRating;
@@ -74,7 +79,6 @@ public class MainActivity extends AppCompatActivity
     private Calendar cal;
 
     public static boolean GrabPageNum = true;
-    public static boolean ChangedOrient = false;
 
     private String sort;
     private String filter;
@@ -91,7 +95,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mLoadingErrorTV = findViewById(R.id.tv_loading_error);
+        mLoadingErrorFV = findViewById(R.id.tv_loading_error);
         mLoadingPB = findViewById(R.id.pb_loading);
         mDrawerLayout = findViewById(R.id.drawer_layout_main);
 
@@ -101,7 +105,8 @@ public class MainActivity extends AppCompatActivity
         mExtra = findViewById(R.id.tv_extra);
         mImageView = findViewById(R.id.poster_img);
         mImagePoster = findViewById(R.id.poster_background);
-        mImageText = findViewById(R.id.No_Image);
+        mImageError = findViewById(R.id.No_Image);
+        refresh = findViewById(R.id.refresh_button);
 
         mMovie = null;
 
@@ -131,6 +136,13 @@ public class MainActivity extends AppCompatActivity
         Date today = new Date();
         cal = Calendar.getInstance();
         cal.setTime(today);
+
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getRandomMovie();
+            }
+        });
 
         if (savedInstanceState != null && savedInstanceState.containsKey(MOVIE_KEY)) {
             GrabPageNum = false;
@@ -204,7 +216,6 @@ public class MainActivity extends AppCompatActivity
         if (mMovie != null) {
             outState.putSerializable(MOVIE_KEY, mMovie);
             outState.putSerializable(RAND_MOVIE_KEY, RandomMovie);
-            ChangedOrient = false;
         }
     }
 
@@ -222,28 +233,54 @@ public class MainActivity extends AppCompatActivity
     public void onLoadFinished(@NonNull Loader<String> loader, String s) {
         Log.d(TAG, "loader finished loading");
 
-        if(GrabPageNum && !ChangedOrient){
+        if(GrabPageNum){
             GrabPageNum = false;
             if (s != null) {
                 createFullURL(s);
             } else {
-                mLoadingErrorTV.setVisibility(View.VISIBLE);
+                mLoadingErrorFV.setVisibility(View.VISIBLE);
+                mImageView.setVisibility(View.INVISIBLE);
+                mImagePoster.setVisibility(View.INVISIBLE);
+                mOverview.setVisibility(View.INVISIBLE);
+                mExtra.setVisibility(View.INVISIBLE);
+                mRating.setVisibility(View.INVISIBLE);
+                mTitle.setVisibility(View.INVISIBLE);
                 mLoadingPB.setVisibility(View.INVISIBLE);
             }
         } else {
-            ChangedOrient = true;
             GrabPageNum = true;
             if (s != null) {
-                mLoadingErrorTV.setVisibility(View.INVISIBLE);
                 mResults = MovieUtils.parseMovieResults(s);
-                mMovieList = mResults.results;
-                mMovie = mMovieList.get(RandomMovie);
-                Log.d(TAG, "onLoadFinished: GrabPageNum is false, now we here" + mMovie.title);
-                assignValues();
+                if(mResults.results != null) {
+                    mLoadingErrorFV.setVisibility(View.INVISIBLE);
+                    mImageView.setVisibility(View.VISIBLE);
+                    mImagePoster.setVisibility(View.VISIBLE);
+                    mOverview.setVisibility(View.VISIBLE);
+                    mExtra.setVisibility(View.VISIBLE);
+                    mRating.setVisibility(View.VISIBLE);
+                    mTitle.setVisibility(View.VISIBLE);
+
+                    mMovieList = mResults.results;
+                    mMovie = mMovieList.get(RandomMovie);
+                    Log.d(TAG, "onLoadFinished: GrabPageNum is false, now we here" + mMovie.title);
+                    assignValues();
+                } else {
+                    mLoadingErrorFV.setVisibility(View.VISIBLE);
+                    mImageView.setVisibility(View.INVISIBLE);
+                    mImagePoster.setVisibility(View.INVISIBLE);
+                    mOverview.setVisibility(View.INVISIBLE);
+                    mExtra.setVisibility(View.INVISIBLE);
+                    mRating.setVisibility(View.INVISIBLE);
+                    mTitle.setVisibility(View.INVISIBLE);
+                }
             } else {
-                mLoadingErrorTV.setVisibility(View.VISIBLE);
+                mLoadingErrorFV.setVisibility(View.VISIBLE);
                 mImageView.setVisibility(View.INVISIBLE);
-                mImageText.setVisibility(View.VISIBLE);
+                mImagePoster.setVisibility(View.INVISIBLE);
+                mOverview.setVisibility(View.INVISIBLE);
+                mExtra.setVisibility(View.INVISIBLE);
+                mRating.setVisibility(View.INVISIBLE);
+                mTitle.setVisibility(View.INVISIBLE);
             }
             mLoadingPB.setVisibility(View.INVISIBLE);
         }
@@ -289,21 +326,21 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            float deltaX = e1.getX() - e2.getX();
-            float deltaXAbs = Math.abs(deltaX);
-            if((deltaXAbs >= MIN_SWIPE_DISTANCE_X) && (deltaXAbs <= MAX_SWIPE_DISTANCE_X))
-            {
-                if(deltaX > 0)
-                {
-                    mMovie.saved=false;
-                    mMovieRepoViewModel.insertMovieRepo(mMovie);
-                    getRandomMovie();
-                } else {
-                    CharSequence text = "Movie added to saved list";
-                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                    mMovie.saved=true;
-                    mMovieRepoViewModel.insertMovieRepo(mMovie);
-                    getRandomMovie();
+            if(mMovie != null) {
+                float deltaX = e1.getX() - e2.getX();
+                float deltaXAbs = Math.abs(deltaX);
+                if ((deltaXAbs >= MIN_SWIPE_DISTANCE_X) && (deltaXAbs <= MAX_SWIPE_DISTANCE_X)) {
+                    if (deltaX > 0) {
+                        mMovie.saved = false;
+                        mMovieRepoViewModel.insertMovieRepo(mMovie);
+                        getRandomMovie();
+                    } else {
+                        CharSequence text = "Movie added to saved list";
+                        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                        mMovie.saved = true;
+                        mMovieRepoViewModel.insertMovieRepo(mMovie);
+                        getRandomMovie();
+                    }
                 }
             }
             return true;
@@ -344,7 +381,7 @@ public class MainActivity extends AppCompatActivity
 
             mImageView.setVisibility(View.VISIBLE);
             mImagePoster.setVisibility(View.VISIBLE);
-            mImageText.setVisibility(View.INVISIBLE);
+            mImageError.setVisibility(View.INVISIBLE);
 
             Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
             Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
@@ -355,12 +392,12 @@ public class MainActivity extends AppCompatActivity
 
             mImageView.setVisibility(View.VISIBLE);
             mImagePoster.setVisibility(View.INVISIBLE);
-            mImageText.setVisibility(View.INVISIBLE);
+            mImageError.setVisibility(View.INVISIBLE);
             Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
         } else {
                 mImageView.setVisibility(View.INVISIBLE);
                 mImagePoster.setVisibility(View.INVISIBLE);
-                mImageText.setVisibility(View.VISIBLE);
+                mImageError.setVisibility(View.VISIBLE);
         }
     }
 

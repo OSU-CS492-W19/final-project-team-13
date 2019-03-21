@@ -16,7 +16,8 @@
 
     <EditTextPreference
         android:key="@string/pref_vote_avg_key"
-        android:title="@string/pref_vote_avg_title"/>
+        android:title="@string/pref_vote_avg_title"
+        android:textColor="@color/colorTextPrimary"/>
 
     <EditTextPreference
         android:key="@string/pref_release_year_key"

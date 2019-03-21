@@ -2,7 +2,10 @@
     <string name="app_name">Movie Match</string>
     <string name="search_box_hint">Search for a movie...</string>
     <string name="search_button_text">Search</string>
-    <string name="loading_error">Unable to run query.  Check internet.</string>
+    <string name="loading_error">We have ran into a problem!</string>
+    <string name="loading_error_totry">Try checking your internet or reducing your filters in the settings menu.</string>
+
+    <string name="refresh_button">Refresh</string>
     <string name="action_share">Share</string>
     <string name="share_chooser_title">How do you want to share this movie?</string>
     <string name="share_repo_text">Check out this Movie! %1$s: %2$s</string>
