@@ -170,11 +170,11 @@ public class MainActivity extends AppCompatActivity
                 //getString(R.string.pref_language_default));
         vote_count = preferences.getString(getString(R.string.pref_vote_count_key), "");
         avg_rating = preferences.getString(getString(R.string.pref_vote_avg_key), "");
-        release_date = preferences.getString(getString(R.string.pref_release_year_key), "0");
+        release_date = preferences.getString(getString(R.string.pref_release_year_key), "");
         if (release_date.equals("")){
-            release_date = "0";
+            release_date = "1950";
         }
-        genre = preferences.getString(getString(R.string.pref_genre_key), getString(R.string.pref_genre_default));
+        genre = preferences.getString(getString(R.string.pref_genre_key), "");
 
         //default is set to 1950
         RandomYear = randomGenerator(Integer.parseInt(release_date), cal.get(Calendar.YEAR));
