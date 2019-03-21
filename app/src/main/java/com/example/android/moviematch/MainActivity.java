@@ -42,8 +42,9 @@ public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<String>, NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String REPOS_ARRAY_KEY = "movieRepos";
+    private static final String MOVIE_KEY = "currentMovie";
     private static final String SEARCH_URL_KEY = "movieSearchURL";
+    private static final String RAND_MOVIE_KEY = "MovieID";
 
     private static final int MOVIE_SEARCH_LOADER_ID = 0;
 
@@ -72,7 +73,8 @@ public class MainActivity extends AppCompatActivity
     private int RandomMovie;
     private Calendar cal;
 
-    private boolean GrabPageNum = true;
+    public static boolean GrabPageNum = true;
+    public static boolean ChangedOrient = false;
 
     private String sort;
     private String filter;
@@ -96,6 +98,8 @@ public class MainActivity extends AppCompatActivity
         mImageView = findViewById(R.id.poster_img);
         mImagePoster = findViewById(R.id.poster_background);
         mImageText = findViewById(R.id.No_Image);
+
+        mMovie = null;
 
         mView = findViewById(R.id.main_view);
         mDetector = new GestureDetector(this, new MyGestureListener());
@@ -124,8 +128,10 @@ public class MainActivity extends AppCompatActivity
         cal = Calendar.getInstance();
         cal.setTime(today);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)) {
-            mMovie = (MovieRepo) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
+        if (savedInstanceState != null && savedInstanceState.containsKey(MOVIE_KEY)) {
+            GrabPageNum = false;
+            mMovie = (MovieRepo) savedInstanceState.getSerializable(MOVIE_KEY);
+            RandomMovie = (int) savedInstanceState.getSerializable(RAND_MOVIE_KEY);
             assignValues();
         } else {
             getRandomMovie();
@@ -179,7 +185,9 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mMovie != null) {
-            outState.putSerializable(REPOS_ARRAY_KEY, mMovie);
+            outState.putSerializable(MOVIE_KEY, mMovie);
+            outState.putSerializable(RAND_MOVIE_KEY, RandomMovie);
+            ChangedOrient = false;
         }
     }
 
@@ -197,7 +205,7 @@ public class MainActivity extends AppCompatActivity
     public void onLoadFinished(@NonNull Loader<String> loader, String s) {
         Log.d(TAG, "loader finished loading");
 
-        if(GrabPageNum){
+        if(GrabPageNum && !ChangedOrient){
             GrabPageNum = false;
             if (s != null) {
                 createFullURL(s);
@@ -206,12 +214,14 @@ public class MainActivity extends AppCompatActivity
                 mLoadingPB.setVisibility(View.INVISIBLE);
             }
         } else {
+            ChangedOrient = true;
             GrabPageNum = true;
             if (s != null) {
                 mLoadingErrorTV.setVisibility(View.INVISIBLE);
                 mResults = MovieUtils.parseMovieResults(s);
                 mMovieList = mResults.results;
                 mMovie = mMovieList.get(RandomMovie);
+                Log.d(TAG, "onLoadFinished: GrabPageNum is false, now we here" + mMovie.title);
                 assignValues();
             } else {
                 mLoadingErrorTV.setVisibility(View.VISIBLE);
