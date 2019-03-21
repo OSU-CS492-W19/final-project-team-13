@@ -22,4 +22,5 @@ public class MovieRepo implements Serializable {
     public Double popularity;
     public Double vote_average;
     public Integer vote_count;
+    public boolean saved;
 }

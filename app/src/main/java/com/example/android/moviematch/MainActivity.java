@@ -1,5 +1,6 @@
 package com.example.android.moviematch;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,8 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -18,11 +19,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -42,8 +42,9 @@ public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<String>, NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String REPOS_ARRAY_KEY = "movieRepos";
+    private static final String MOVIE_KEY = "currentMovie";
     private static final String SEARCH_URL_KEY = "movieSearchURL";
+    private static final String RAND_MOVIE_KEY = "MovieID";
 
     private static final int MOVIE_SEARCH_LOADER_ID = 0;
 
@@ -60,8 +61,11 @@ public class MainActivity extends AppCompatActivity
     private TextView mOverview;
     private TextView mExtra;
 
+    private MovieRepoViewModel mMovieRepoViewModel;
+
     private MovieUtils.MovieSearchResults mResults;
-    private ArrayList<MovieRepo> mRepos;
+    private ArrayList<MovieRepo> mMovieList;
+    private MovieRepo mMovie;
 
     private int NumberOfPages = 50;
     private int RandomYear;
@@ -69,7 +73,8 @@ public class MainActivity extends AppCompatActivity
     private int RandomMovie;
     private Calendar cal;
 
-    private boolean GrabPageNum = true;
+    public static boolean GrabPageNum = true;
+    public static boolean ChangedOrient = false;
 
     private String sort;
     private String filter;
@@ -98,6 +103,8 @@ public class MainActivity extends AppCompatActivity
         mImagePoster = findViewById(R.id.poster_background);
         mImageText = findViewById(R.id.No_Image);
 
+        mMovie = null;
+
         mView = findViewById(R.id.main_view);
         mDetector = new GestureDetector(this, new MyGestureListener());
         mView.setOnTouchListener(touchListener);
@@ -106,6 +113,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        mMovieRepoViewModel = ViewModelProviders.of(this).get(MovieRepoViewModel.class);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -116,10 +125,6 @@ public class MainActivity extends AppCompatActivity
 
         context = getApplicationContext();
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)) {
-            mRepos = (ArrayList<MovieRepo>) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
-        }
-
         getSupportLoaderManager().initLoader(MOVIE_SEARCH_LOADER_ID, null, this);
 
         //Get current year for upper bound
@@ -127,7 +132,20 @@ public class MainActivity extends AppCompatActivity
         cal = Calendar.getInstance();
         cal.setTime(today);
 
-        getRandomMovie();
+        if (savedInstanceState != null && savedInstanceState.containsKey(MOVIE_KEY)) {
+            GrabPageNum = false;
+            mMovie = (MovieRepo) savedInstanceState.getSerializable(MOVIE_KEY);
+            RandomMovie = (int) savedInstanceState.getSerializable(RAND_MOVIE_KEY);
+            assignValues();
+        } else {
+            getRandomMovie();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.repo_detail, menu);
+        return true;
     }
 
     @Override
@@ -135,6 +153,9 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(Gravity.START);
+                return true;
+            case R.id.action_share:
+                shareRepo();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -180,8 +201,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mRepos != null) {
-            outState.putSerializable(REPOS_ARRAY_KEY, mRepos);
+        if (mMovie != null) {
+            outState.putSerializable(MOVIE_KEY, mMovie);
+            outState.putSerializable(RAND_MOVIE_KEY, RandomMovie);
+            ChangedOrient = false;
         }
     }
 
@@ -199,7 +222,7 @@ public class MainActivity extends AppCompatActivity
     public void onLoadFinished(@NonNull Loader<String> loader, String s) {
         Log.d(TAG, "loader finished loading");
 
-        if(GrabPageNum){
+        if(GrabPageNum && !ChangedOrient){
             GrabPageNum = false;
             if (s != null) {
                 createFullURL(s);
@@ -208,9 +231,15 @@ public class MainActivity extends AppCompatActivity
                 mLoadingPB.setVisibility(View.INVISIBLE);
             }
         } else {
+            ChangedOrient = true;
             GrabPageNum = true;
             if (s != null) {
-                assignValues(s);
+                mLoadingErrorTV.setVisibility(View.INVISIBLE);
+                mResults = MovieUtils.parseMovieResults(s);
+                mMovieList = mResults.results;
+                mMovie = mMovieList.get(RandomMovie);
+                Log.d(TAG, "onLoadFinished: GrabPageNum is false, now we here" + mMovie.title);
+                assignValues();
             } else {
                 mLoadingErrorTV.setVisibility(View.VISIBLE);
                 mImageView.setVisibility(View.INVISIBLE);
@@ -255,14 +284,8 @@ public class MainActivity extends AppCompatActivity
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        private int MIN_SWIPE_DISTANCE_X = 400;
+        private int MIN_SWIPE_DISTANCE_X = 300;
         private int MAX_SWIPE_DISTANCE_X = 1000;
-
-        /*
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
-        } */
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -272,12 +295,14 @@ public class MainActivity extends AppCompatActivity
             {
                 if(deltaX > 0)
                 {
-                    CharSequence text = "Detected Left Swipe... (Saved)";
+                    CharSequence text = "Movie added to saved list";
                     Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                    mMovie.saved=true;
+                    mMovieRepoViewModel.insertMovieRepo(mMovie);
                     getRandomMovie();
                 } else {
-                    CharSequence text = "Detected Right Swipe...(Pass)";
-                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                    mMovie.saved=false;
+                    mMovieRepoViewModel.insertMovieRepo(mMovie);
                     getRandomMovie();
                 }
             }
@@ -302,20 +327,17 @@ public class MainActivity extends AppCompatActivity
         getSupportLoaderManager().restartLoader(MOVIE_SEARCH_LOADER_ID, args, this);
     }
 
-    public void assignValues(String s){
-        mLoadingErrorTV.setVisibility(View.INVISIBLE);
-        mResults = MovieUtils.parseMovieResults(s);
-        mRepos = mResults.results;
+    public void assignValues(){
+        String rating = "Rating: " + String.valueOf(mMovie.vote_average) + "/10     Votes: " + String.valueOf(mMovie.vote_count);
+        String extra = "Release Date: " + mMovie.release_date + "     Language: " + mMovie.original_language;
+        mTitle.setText(mMovie.title);
+        mRating.setText(rating);
+        mOverview.setText(mMovie.overview);
+        mExtra.setText(extra);
 
-        //needed if no results come back
-        if (mRepos != null) {
-            String rating = "Rating: " + String.valueOf(mRepos.get(RandomMovie).vote_average) + "/10     Votes: " + String.valueOf(mRepos.get(RandomMovie).vote_count);
-            String extra = "Release Date: " + mRepos.get(RandomMovie).release_date + "     Language: " + mRepos.get(RandomMovie).original_language;
-            mTitle.setText(mRepos.get(RandomMovie).title);
-            mRating.setText(rating);
-            mOverview.setText(mRepos.get(RandomMovie).overview);
-            mExtra.setText(extra);
-
+        if(mMovie.poster_path != null && mMovie.backdrop_path != null) {
+            String posterURL = MovieUtils.buildMoviePosterURL(mMovie.backdrop_path);
+            String iconURL = MovieUtils.buildMoviePosterURL(300, mMovie.poster_path);
 
             if (mRepos.get(RandomMovie).poster_path != null && mRepos.get(RandomMovie).backdrop_path != null) {
                 String posterURL = MovieUtils.buildMoviePosterURL(mRepos.get(RandomMovie).backdrop_path);
@@ -327,6 +349,10 @@ public class MainActivity extends AppCompatActivity
                 mImageView.setVisibility(View.VISIBLE);
                 mImagePoster.setVisibility(View.VISIBLE);
                 mImageText.setVisibility(View.INVISIBLE);
+            Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
+            Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
+        } else if(mMovie.poster_path != null){
+            String iconURL = MovieUtils.buildMoviePosterURL(300, mMovie.poster_path);
 
                 Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
                 Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
@@ -344,6 +370,17 @@ public class MainActivity extends AppCompatActivity
                 mImagePoster.setVisibility(View.INVISIBLE);
                 mImageText.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    public void shareRepo() {
+        if (mMovie != null) {
+            String shareText = getString(R.string.share_repo_text, mMovie.title, mMovie.overview);
+            ShareCompat.IntentBuilder.from(this)
+                    .setType("text/plain")
+                    .setText(shareText)
+                    .setChooserTitle(R.string.share_chooser_title)
+                    .startChooser();
         }
     }
 }
