@@ -18,9 +18,12 @@ public class MovieUtils {
 
     private final static String MOVIE_SEARCH_QUERY_PARAM = "query";
     private final static String MOVIE_DISCOVER_SORT_PARAM = "sort_by";
-    private final static String MOVIE_DISCOVER_RD_PARAM = "primary_release_year";
+    private final static String MOVIE_DISCOVER_RD_PARAM = "year";
     private final static String MOVIE_DISCOVER_PAGE_PARAM = "page";
     private final static String MOVIE_DISCOVER_FILTER_RELEASE_YEAR_PARAM = "primary_release_year";
+    private final static String MOVIE_DISCOVER_VOTE_COUNT_PARAM = "vote_count.gte";
+    private final static String MOVIE_DISCOVER_AVG_RATING_PARAM = "vote_average.gte";
+    private final static String MOVIE_DISCOVER_GENRE_PARAM = "with_genres";
     private final static String MOVIE_POSTER_WIDTH_PARAM = "w";
 
     private final static String MOVIE_API_PARAM = "api_key";
@@ -32,23 +35,28 @@ public class MovieUtils {
         public int total_pages;
     }
 
-    public static String buildMovieDiscoverURL(String sort, int releaseYear, int pageNum, String filter) {
-
+    public static String buildMovieDiscoverURL(String sort, int releaseYear, int pageNum, String voteCount, String avgRating, String genre){
         Uri.Builder builder = Uri.parse(MOVIE_DISCOVER_BASE_URL).buildUpon();
         builder.appendQueryParameter(MOVIE_API_PARAM, MOVIE_API_KEY);
 
         if (!sort.equals("")) {
             builder.appendQueryParameter(MOVIE_DISCOVER_SORT_PARAM, sort);
         }
-        if (!filter.equals("")) {
-            builder.appendQueryParameter(MOVIE_DISCOVER_FILTER_RELEASE_YEAR_PARAM, filter);
+        if (!voteCount.equals("")) {
+            builder.appendQueryParameter(MOVIE_DISCOVER_VOTE_COUNT_PARAM, voteCount);
+        }
+        if (!avgRating.equals("")){
+            builder.appendQueryParameter(MOVIE_DISCOVER_AVG_RATING_PARAM, avgRating);
+        }
+        if (!genre.equals("")){
+            builder.appendQueryParameter(MOVIE_DISCOVER_GENRE_PARAM, genre);
         }
         builder.appendQueryParameter(MOVIE_DISCOVER_RD_PARAM, Integer.toString(releaseYear));
         builder.appendQueryParameter(MOVIE_DISCOVER_PAGE_PARAM, Integer.toString(pageNum));
         return builder.build().toString();
     }
 
-    public static String buildMovieDiscoverURL(String sort, int releaseYear, String filter) {
+    public static String buildMovieDiscoverURL(String sort, int releaseYear, String voteCount, String avgRating, String genre) {
 
         Uri.Builder builder = Uri.parse(MOVIE_DISCOVER_BASE_URL).buildUpon();
         builder.appendQueryParameter(MOVIE_API_PARAM, MOVIE_API_KEY);
@@ -56,8 +64,14 @@ public class MovieUtils {
         if (!sort.equals("")) {
             builder.appendQueryParameter(MOVIE_DISCOVER_SORT_PARAM, sort);
         }
-        if (!filter.equals("")) {
-            builder.appendQueryParameter(MOVIE_DISCOVER_FILTER_RELEASE_YEAR_PARAM, filter);
+        if (!voteCount.equals("")) {
+            builder.appendQueryParameter(MOVIE_DISCOVER_VOTE_COUNT_PARAM, voteCount);
+        }
+        if (!avgRating.equals("")){
+            builder.appendQueryParameter(MOVIE_DISCOVER_AVG_RATING_PARAM, avgRating);
+        }
+        if (!genre.equals("")){
+            builder.appendQueryParameter(MOVIE_DISCOVER_GENRE_PARAM, genre);
         }
         builder.appendQueryParameter(MOVIE_DISCOVER_RD_PARAM, Integer.toString(releaseYear));
         return builder.build().toString();

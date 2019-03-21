@@ -1,13 +1,19 @@
 package com.example.android.moviematch;
 
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.android.moviematch.data.MovieRepo;
+import com.example.android.moviematch.utils.MovieUtils;
 
 import java.util.List;
 
@@ -52,10 +58,12 @@ public class MovieSearchAdapter extends RecyclerView.Adapter<MovieSearchAdapter.
 
     class SearchResultViewHolder extends RecyclerView.ViewHolder {
         private TextView mSearchResultTV;
+        private ImageView mImageView;
 
         public SearchResultViewHolder(View itemView) {
             super(itemView);
             mSearchResultTV = itemView.findViewById(R.id.tv_search_result);
+            mImageView = itemView.findViewById(R.id.iv_img_icon);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -65,8 +73,13 @@ public class MovieSearchAdapter extends RecyclerView.Adapter<MovieSearchAdapter.
                 }
             });
         }
-        public void bind(MovieRepo repo) {
-            mSearchResultTV.setText(repo.title);
+        public void bind(MovieRepo movie) {
+            mSearchResultTV.setText(movie.title);
+
+            String iconURL = MovieUtils.buildMoviePosterURL(300, movie.poster_path);
+            Glide.with(mImageView.getContext()).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
+
+
         }
     }
 }

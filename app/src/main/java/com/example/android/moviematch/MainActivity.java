@@ -42,8 +42,9 @@ public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<String>, NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final String REPOS_ARRAY_KEY = "movieRepos";
+    private static final String MOVIE_KEY = "currentMovie";
     private static final String SEARCH_URL_KEY = "movieSearchURL";
+    private static final String RAND_MOVIE_KEY = "MovieID";
 
     private static final int MOVIE_SEARCH_LOADER_ID = 0;
 
@@ -72,10 +73,15 @@ public class MainActivity extends AppCompatActivity
     private int RandomMovie;
     private Calendar cal;
 
-    private boolean GrabPageNum = true;
+    public static boolean GrabPageNum = true;
+    public static boolean ChangedOrient = false;
 
     private String sort;
     private String filter;
+    private String vote_count;
+    private String avg_rating;
+    private String release_date;
+    private String genre;
 
     private GestureDetector mDetector;
     private Context context;
@@ -96,6 +102,8 @@ public class MainActivity extends AppCompatActivity
         mImageView = findViewById(R.id.poster_img);
         mImagePoster = findViewById(R.id.poster_background);
         mImageText = findViewById(R.id.No_Image);
+
+        mMovie = null;
 
         mView = findViewById(R.id.main_view);
         mDetector = new GestureDetector(this, new MyGestureListener());
@@ -124,8 +132,10 @@ public class MainActivity extends AppCompatActivity
         cal = Calendar.getInstance();
         cal.setTime(today);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)) {
-            mMovie = (MovieRepo) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
+        if (savedInstanceState != null && savedInstanceState.containsKey(MOVIE_KEY)) {
+            GrabPageNum = false;
+            mMovie = (MovieRepo) savedInstanceState.getSerializable(MOVIE_KEY);
+            RandomMovie = (int) savedInstanceState.getSerializable(RAND_MOVIE_KEY);
             assignValues();
         } else {
             getRandomMovie();
@@ -134,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.repo_detail, menu);
+        getMenuInflater().inflate(R.menu.main_repo, menu);
         return true;
     }
 
@@ -154,15 +164,23 @@ public class MainActivity extends AppCompatActivity
 
     private void getRandomMovie() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sort = ""; // = preferences.getString(getString(R.string.pref_sort_key),
-                //getString(R.string.pref_sort_default));
+        sort = preferences.getString(getString(R.string.pref_sort_key),
+                                    getString(R.string.pref_sort_default));
         filter = ""; // = preferences.getString(getString(R.string.pref_language_key),
                 //getString(R.string.pref_language_default));
+        vote_count = preferences.getString(getString(R.string.pref_vote_count_key), "");
+        avg_rating = preferences.getString(getString(R.string.pref_vote_avg_key), "");
+        release_date = preferences.getString(getString(R.string.pref_release_year_key), "");
+        if (release_date.equals("")){
+            release_date = "1950";
+        }
+        genre = preferences.getString(getString(R.string.pref_genre_key), "");
 
-        RandomYear = randomGenerator(1950, cal.get(Calendar.YEAR));
+        //default is set to 1950
+        RandomYear = randomGenerator(Integer.parseInt(release_date), cal.get(Calendar.YEAR));
         RandomMovie = randomGenerator(0, 20);
 
-        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, filter);
+        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, vote_count, avg_rating, genre);
 
         Bundle args = new Bundle();
         args.putString(SEARCH_URL_KEY, url);
@@ -172,6 +190,11 @@ public class MainActivity extends AppCompatActivity
 
     private int randomGenerator(int lower, int upper){
         Random r = new Random();
+        //error: Does not work if lower is same as upper
+        if (upper - lower <= 0){
+            lower = upper - 1;
+        }
+        Log.d(TAG, "randomGenerator: " + r.nextInt(upper-lower) + lower);
         return r.nextInt(upper-lower) + lower;
     }
 
@@ -179,7 +202,9 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (mMovie != null) {
-            outState.putSerializable(REPOS_ARRAY_KEY, mMovie);
+            outState.putSerializable(MOVIE_KEY, mMovie);
+            outState.putSerializable(RAND_MOVIE_KEY, RandomMovie);
+            ChangedOrient = false;
         }
     }
 
@@ -197,7 +222,7 @@ public class MainActivity extends AppCompatActivity
     public void onLoadFinished(@NonNull Loader<String> loader, String s) {
         Log.d(TAG, "loader finished loading");
 
-        if(GrabPageNum){
+        if(GrabPageNum && !ChangedOrient){
             GrabPageNum = false;
             if (s != null) {
                 createFullURL(s);
@@ -206,12 +231,14 @@ public class MainActivity extends AppCompatActivity
                 mLoadingPB.setVisibility(View.INVISIBLE);
             }
         } else {
+            ChangedOrient = true;
             GrabPageNum = true;
             if (s != null) {
                 mLoadingErrorTV.setVisibility(View.INVISIBLE);
                 mResults = MovieUtils.parseMovieResults(s);
                 mMovieList = mResults.results;
                 mMovie = mMovieList.get(RandomMovie);
+                Log.d(TAG, "onLoadFinished: GrabPageNum is false, now we here" + mMovie.title);
                 assignValues();
             } else {
                 mLoadingErrorTV.setVisibility(View.VISIBLE);
@@ -268,13 +295,13 @@ public class MainActivity extends AppCompatActivity
             {
                 if(deltaX > 0)
                 {
-                    CharSequence text = "Movie added to saved list";
-                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                    mMovie.saved=true;
+                    mMovie.saved=false;
                     mMovieRepoViewModel.insertMovieRepo(mMovie);
                     getRandomMovie();
                 } else {
-                    mMovie.saved=false;
+                    CharSequence text = "Movie added to saved list";
+                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                    mMovie.saved=true;
                     mMovieRepoViewModel.insertMovieRepo(mMovie);
                     getRandomMovie();
                 }
@@ -292,15 +319,7 @@ public class MainActivity extends AppCompatActivity
             RandomPage = randomGenerator(1, 1000);
         }
 
-        if(sort == null){
-            sort = "";
-        }
-
-        if(filter == null){
-            filter = "";
-        }
-
-        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, RandomPage, filter);
+        String url = MovieUtils.buildMovieDiscoverURL(sort, RandomYear, RandomPage, vote_count, avg_rating, genre);
         Log.d("Full URL", url);
 
         Bundle args = new Bundle();
@@ -339,9 +358,9 @@ public class MainActivity extends AppCompatActivity
             mImageText.setVisibility(View.INVISIBLE);
             Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
         } else {
-            mImageView.setVisibility(View.INVISIBLE);
-            mImagePoster.setVisibility(View.INVISIBLE);
-            mImageText.setVisibility(View.VISIBLE);
+                mImageView.setVisibility(View.INVISIBLE);
+                mImagePoster.setVisibility(View.INVISIBLE);
+                mImageText.setVisibility(View.VISIBLE);
         }
     }
 

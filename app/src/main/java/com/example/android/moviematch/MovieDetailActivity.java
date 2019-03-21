@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     private ImageView mImageView;
     private ImageView mImagePoster;
     private TextView mImageText;
+
+    private boolean saved = false;
+
     private View mView;
 
     private TextView mTitle;
@@ -38,8 +42,10 @@ public class MovieDetailActivity extends AppCompatActivity {
     private TextView mExtra;
 
 
+
     private MovieRepoViewModel mMovieRepoViewModel;
     private MovieRepo mRepo;
+    private MenuItem menuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,12 @@ public class MovieDetailActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.repo_detail, menu);
+        menuItem = menu.findItem(R.id.action_save);
+        if(mRepo.saved == true){
+            menuItem.setIcon(R.drawable.ic_bookmark_black_24dp);
+        }else{
+            menuItem.setIcon(R.drawable.ic_bookmark_border_black_24dp);
+        }
         return true;
     }
 
@@ -108,6 +120,14 @@ public class MovieDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_share:
                 shareRepo();
+                return true;
+            case R.id.action_save:
+                saveRepo();
+                if(saved == true) {
+                    item.setIcon(R.drawable.ic_bookmark_black_24dp);
+                }else{
+                    item.setIcon(R.drawable.ic_bookmark_border_black_24dp);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -122,6 +142,20 @@ public class MovieDetailActivity extends AppCompatActivity {
                     .setText(shareText)
                     .setChooserTitle(R.string.share_chooser_title)
                     .startChooser();
+        }
+    }
+
+    public void saveRepo() {
+        if (mRepo != null) {
+            if(mRepo.saved == false){
+                mRepo.saved = true;
+                mMovieRepoViewModel.insertMovieRepo(mRepo);
+                saved = true;
+            }else{
+                mRepo.saved = false;
+                mMovieRepoViewModel.insertMovieRepo(mRepo);
+                saved = false;
+            }
         }
     }
 }
