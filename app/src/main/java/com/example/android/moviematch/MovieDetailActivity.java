@@ -6,36 +6,53 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ShareCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.android.moviematch.data.MovieRepo;
 import com.example.android.moviematch.utils.MovieUtils;
 
 public class MovieDetailActivity extends AppCompatActivity {
-    private TextView mRepoNameTV;
-    private TextView mRepoStarsTV;
-    private TextView mRepoDescriptionTV;
-    private ImageView mRepoBookmarkIV;
+
+    //private TextView mLoadingErrorTV;
+    //private ProgressBar mLoadingPB;
+    //private DrawerLayout mDrawerLayout;
+    private ImageView mImageView;
+    private ImageView mImagePoster;
+    private TextView mImageText;
+    private View mView;
+
+    private TextView mTitle;
+    private TextView mRating;
+    private TextView mOverview;
+    private TextView mExtra;
+
 
     private MovieRepoViewModel mMovieRepoViewModel;
     private MovieRepo mRepo;
-    private boolean mIsSaved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repo_detail);
 
-        mRepoNameTV = findViewById(R.id.tv_repo_name);
-        mRepoStarsTV = findViewById(R.id.tv_repo_stars);
-        mRepoDescriptionTV = findViewById(R.id.tv_repo_description);
-        mRepoBookmarkIV = findViewById(R.id.iv_repo_bookmark);
+        mTitle = findViewById(R.id.tv_title);
+        mRating = findViewById(R.id.tv_rating);
+        mOverview = findViewById(R.id.tv_overview);
+        mExtra = findViewById(R.id.tv_extra);
+        mImageView = findViewById(R.id.poster_img);
+        mImagePoster = findViewById(R.id.poster_background);
+        mImageText = findViewById(R.id.No_Image);
 
         mMovieRepoViewModel = ViewModelProviders.of(this).get(MovieRepoViewModel.class);
 
@@ -43,36 +60,41 @@ public class MovieDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(MovieUtils.EXTRA_MOVIE_REPO)) {
             mRepo = (MovieRepo) intent.getSerializableExtra(MovieUtils.EXTRA_MOVIE_REPO);
-            //mRepoNameTV.setText(mRepo.full_name);
-            //mRepoStarsTV.setText("" + mRepo.stargazers_count);
-            //mRepoDescriptionTV.setText(mRepo.description);
+            String rating = "Rating: " + String.valueOf(mRepo.vote_average) + "/10     Votes: " + String.valueOf(mRepo.vote_count);
+            String extra = "Release Date: " + mRepo.release_date + "     Language: " + mRepo.original_language;
+            mTitle.setText(mRepo.title);
+            mRating.setText(rating);
+            mOverview.setText(mRepo.overview);
+            mExtra.setText(extra);
 
-            /*mMovieRepoViewModel.getMovieRepoByName(mRepo.full_name).observe(this, new Observer<MovieRepo>() {
-                @Override
-                public void onChanged(@Nullable MovieRepo repo) {
-                    if (repo != null) {
-                        mIsSaved = true;
-                        mRepoBookmarkIV.setImageResource(R.drawable.ic_bookmark_black_24dp);
-                    } else {
-                        mIsSaved = false;
-                        mRepoBookmarkIV.setImageResource(R.drawable.ic_bookmark_border_black_24dp);
-                    }
-                }
-            });*/
-        }
+            if(mRepo.poster_path != null && mRepo.backdrop_path != null) {
+                String posterURL = MovieUtils.buildMoviePosterURL(mRepo.backdrop_path);
+                String iconURL = MovieUtils.buildMoviePosterURL(300, mRepo.poster_path);
 
-        mRepoBookmarkIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mRepo != null) {
-                    if (!mIsSaved) {
-                        mMovieRepoViewModel.insertMovieRepo(mRepo);
-                    } else {
-                        mMovieRepoViewModel.deleteMovieRepo(mRepo);
-                    }
-                }
+                Log.d("iconURL", iconURL);
+                Log.d("posterURL", posterURL);
+
+                mImageView.setVisibility(View.VISIBLE);
+                mImagePoster.setVisibility(View.VISIBLE);
+                mImageText.setVisibility(View.INVISIBLE);
+
+                Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
+                Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
+            } else if(mRepo.poster_path != null){
+                String iconURL = MovieUtils.buildMoviePosterURL(300, mRepo.poster_path);
+
+                Log.d("iconURL", iconURL);
+
+                mImageView.setVisibility(View.VISIBLE);
+                mImagePoster.setVisibility(View.INVISIBLE);
+                mImageText.setVisibility(View.INVISIBLE);
+                Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
+            } else {
+                mImageView.setVisibility(View.INVISIBLE);
+                mImagePoster.setVisibility(View.INVISIBLE);
+                mImageText.setVisibility(View.VISIBLE);
             }
-        });
+        }
     }
 
     @Override

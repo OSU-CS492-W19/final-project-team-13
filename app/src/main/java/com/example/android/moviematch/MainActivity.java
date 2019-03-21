@@ -1,5 +1,6 @@
 package com.example.android.moviematch;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity
     private TextView mOverview;
     private TextView mExtra;
 
+    private MovieRepoViewModel mMovieRepoViewModel;
+
     private MovieUtils.MovieSearchResults mResults;
     private ArrayList<MovieRepo> mMovieList;
     private MovieRepo mMovie;
@@ -101,6 +104,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        mMovieRepoViewModel = ViewModelProviders.of(this).get(MovieRepoViewModel.class);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -256,12 +261,14 @@ public class MainActivity extends AppCompatActivity
             {
                 if(deltaX > 0)
                 {
-                    CharSequence text = "Detected Left Swipe... (Saved)";
+                    CharSequence text = "Movie added to saved list";
                     Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                    mMovie.saved=true;
+                    mMovieRepoViewModel.insertMovieRepo(mMovie);
                     getRandomMovie();
                 } else {
-                    CharSequence text = "Detected Right Swipe...(Pass)";
-                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                    mMovie.saved=false;
+                    mMovieRepoViewModel.insertMovieRepo(mMovie);
                     getRandomMovie();
                 }
             }
