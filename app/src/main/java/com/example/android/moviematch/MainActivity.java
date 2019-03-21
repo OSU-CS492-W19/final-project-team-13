@@ -339,37 +339,28 @@ public class MainActivity extends AppCompatActivity
             String posterURL = MovieUtils.buildMoviePosterURL(mMovie.backdrop_path);
             String iconURL = MovieUtils.buildMoviePosterURL(300, mMovie.poster_path);
 
-            if (mRepos.get(RandomMovie).poster_path != null && mRepos.get(RandomMovie).backdrop_path != null) {
-                String posterURL = MovieUtils.buildMoviePosterURL(mRepos.get(RandomMovie).backdrop_path);
-                String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
+            Log.d("iconURL", iconURL);
+            Log.d("posterURL", posterURL);
 
-                Log.d("iconURL", iconURL);
-                Log.d("posterURL", posterURL);
+            mImageView.setVisibility(View.VISIBLE);
+            mImagePoster.setVisibility(View.VISIBLE);
+            mImageText.setVisibility(View.INVISIBLE);
 
-                mImageView.setVisibility(View.VISIBLE);
-                mImagePoster.setVisibility(View.VISIBLE);
-                mImageText.setVisibility(View.INVISIBLE);
             Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
             Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
         } else if(mMovie.poster_path != null){
             String iconURL = MovieUtils.buildMoviePosterURL(300, mMovie.poster_path);
 
-                Glide.with(this).load(posterURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImagePoster);
-                Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
-            } else if (mRepos.get(RandomMovie).poster_path != null) {
-                String iconURL = MovieUtils.buildMoviePosterURL(300, mRepos.get(RandomMovie).poster_path);
+            Log.d("iconURL", iconURL);
 
-                Log.d("iconURL", iconURL);
-
-                mImageView.setVisibility(View.VISIBLE);
-                mImagePoster.setVisibility(View.INVISIBLE);
-                mImageText.setVisibility(View.INVISIBLE);
-                Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
-            } else {
+            mImageView.setVisibility(View.VISIBLE);
+            mImagePoster.setVisibility(View.INVISIBLE);
+            mImageText.setVisibility(View.INVISIBLE);
+            Glide.with(this).load(iconURL).transition(DrawableTransitionOptions.withCrossFade()).into(mImageView);
+        } else {
                 mImageView.setVisibility(View.INVISIBLE);
                 mImagePoster.setVisibility(View.INVISIBLE);
                 mImageText.setVisibility(View.VISIBLE);
-            }
         }
     }
 
