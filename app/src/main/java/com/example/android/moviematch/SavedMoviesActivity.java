@@ -41,6 +41,7 @@ public class SavedMoviesActivity extends AppCompatActivity implements MovieSearc
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu);
+        actionBar.setTitle("Saved Movies");
 
         RecyclerView savedReposRV = findViewById(R.id.rv_saved_repos);
         savedReposRV.setLayoutManager(new LinearLayoutManager(this));

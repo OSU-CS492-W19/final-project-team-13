@@ -12,7 +12,8 @@
 
     <EditTextPreference
         android:key="@string/pref_vote_count_key"
-        android:title="@string/pref_vote_count_title"/>
+        android:title="@string/pref_vote_count_title"
+        android:textColor="@color/colorTextPrimary"/>
 
     <EditTextPreference
         android:key="@string/pref_vote_avg_key"
@@ -21,7 +22,8 @@
 
     <EditTextPreference
         android:key="@string/pref_release_year_key"
-        android:title="@string/pref_release_year_title"/>
+        android:title="@string/pref_release_year_title"
+        android:textColor="@color/colorTextPrimary"/>
 
     <ListPreference
         android:key="@string/pref_genre_key"

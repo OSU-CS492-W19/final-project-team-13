@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -67,6 +68,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Details");
+
         mRepo = null;
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(MovieUtils.EXTRA_MOVIE_REPO)) {
@@ -114,7 +118,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         menuItem = menu.findItem(R.id.action_save);
         if(mRepo.saved == true){
             menuItem.setIcon(R.drawable.ic_bookmark_black_24dp);
-        }else{
+        } else {
             menuItem.setIcon(R.drawable.ic_bookmark_border_black_24dp);
         }
         return true;

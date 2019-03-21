@@ -75,6 +75,7 @@ public class MovieSearchActivity extends AppCompatActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu);
+        actionBar.setTitle("Search");
 
         if (savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)) {
             mRepos = (ArrayList<MovieRepo>) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
