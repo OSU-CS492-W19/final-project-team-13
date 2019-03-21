@@ -295,13 +295,13 @@ public class MainActivity extends AppCompatActivity
             {
                 if(deltaX > 0)
                 {
-                    CharSequence text = "Movie added to saved list";
-                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
-                    mMovie.saved=true;
+                    mMovie.saved=false;
                     mMovieRepoViewModel.insertMovieRepo(mMovie);
                     getRandomMovie();
                 } else {
-                    mMovie.saved=false;
+                    CharSequence text = "Movie added to saved list";
+                    Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                    mMovie.saved=true;
                     mMovieRepoViewModel.insertMovieRepo(mMovie);
                     getRandomMovie();
                 }
