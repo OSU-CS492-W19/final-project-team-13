@@ -17,23 +17,24 @@
         <activity
             android:name="com.example.android.moviematch.SavedMoviesActivity"
             android:parentActivityName="com.example.android.moviematch.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.android.moviematch.MainActivity" />
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.android.moviematch.MainActivity" />
         </activity>
         <activity
             android:name="com.example.android.moviematch.SettingsActivity"
+            android:theme="@style/PreferenceScreen"
             android:parentActivityName="com.example.android.moviematch.MainActivity">
             <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.android.moviematch.MainActivity" />
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.android.moviematch.MainActivity" />
         </activity>
         <activity
             android:name="com.example.android.moviematch.MovieSearchActivity"
             android:parentActivityName="com.example.android.moviematch.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.android.moviematch.MainActivity" />
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.android.moviematch.MainActivity" />
         </activity>
         <activity
             android:name="com.example.android.moviematch.MovieDetailActivity"
